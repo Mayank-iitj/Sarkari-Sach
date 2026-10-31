@@ -8,6 +8,9 @@ import time
 from collections import defaultdict
 from pathlib import Path
 
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+
 # Add backend and root to sys.path
 root_dir = Path(__file__).resolve().parent.parent
 backend_dir = root_dir / "backend"
@@ -19,11 +22,13 @@ if str(root_dir) not in sys.path:
 from app.db import SyncSessionLocal, init_db_sync
 from corpus.seed_data import seed_corpus_sync
 from app.models import Check
+from app.settings import settings
 from app.pipeline.run import run_verification_pipeline
 from app.routes.checks import gen_public_id
 
 
 async def evaluate(split: str = "test", holdout_debunks: bool = False, write_report: bool = True):
+    settings.OFFLINE_MODE = True
     init_db_sync()
     seed_corpus_sync()
 

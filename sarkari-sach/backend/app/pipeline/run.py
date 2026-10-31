@@ -18,6 +18,8 @@ from app.forensics.ident import analyze_identifiers
 from app.forensics.provenance import check_debunk_match
 from app.pipeline.stages.retrieve import retrieve_relevant_evidence
 from app.pipeline.stages.lineage import resolve_lineage
+from app.ingest.web_search import search_official_schemes, ingest_live_search_result_to_corpus
+from app.models import Chunk
 from app.llm.client import get_llm_client
 from app.llm.prompts import (
     EXTRACTION_SYSTEM_PROMPT,
@@ -146,10 +148,34 @@ async def run_verification_pipeline(
         claim_data=primary_claim,
         db=db
     )
+
+    searched_srcs = ["PIB (Press Information Bureau)", "e-Gazette of India", "myScheme Portal"]
+
+    # Dynamic live web search for active authorized government schemes
+    if (not best_doc or ret_conf < 0.65 or not provs) and not settings.OFFLINE_MODE:
+        try:
+            scheme_query = primary_claim.get("scheme_name_en") or primary_claim.get("scheme_name") or primary_claim.get("claim_text", "")
+            live_results = await search_official_schemes(scheme_query, max_results=3)
+            if live_results:
+                top_result = live_results[0]
+                live_doc = ingest_live_search_result_to_corpus(top_result, db)
+                live_chunks = db.query(Chunk).filter(Chunk.document_id == live_doc.id).order_by(Chunk.ordinal).limit(8).all()
+                live_provs = [
+                    {"field": p.field, "value": p.value, "quote": p.quote}
+                    for p in live_doc.provisions
+                ]
+                if live_chunks:
+                    best_doc = live_doc
+                    top_chunks = live_chunks
+                    provs = live_provs
+                    ret_conf = max(ret_conf, 0.90)
+                    searched_srcs.append(f"Live Official Portal: {top_result['domain']}")
+        except Exception as e:
+            print(f"[Pipeline] Live search fallback exception: {e}")
+
     t_ret = int((time.time() - t_ret_start) * 1000)
     timings["retrieve"] = t_ret
 
-    searched_srcs = ["PIB (Press Information Bureau)", "e-Gazette of India", "myScheme Portal"]
     check.searched_sources = searched_srcs
     await emit_event(check_id, "stage", {
         "stage": "RETRIEVED",

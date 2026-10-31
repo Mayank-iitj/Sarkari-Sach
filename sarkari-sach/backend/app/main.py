@@ -3,6 +3,12 @@ import sys
 from pathlib import Path
 from contextlib import asynccontextmanager
 
+# Permanent UTF-8 reconfig for Windows console safety
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+if hasattr(sys.stderr, "reconfigure"):
+    sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+
 # Ensure backend directory is in path
 backend_path = Path(__file__).resolve().parent.parent
 if str(backend_path) not in sys.path:

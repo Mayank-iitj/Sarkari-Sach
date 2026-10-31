@@ -1,11 +1,61 @@
 from __future__ import annotations
-from fastapi import APIRouter, Depends, HTTPException
+from typing import Any
+from pydantic import BaseModel
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from app.db import get_db
 from app.models import Scheme, Document, DocRelation
 from app.schemas import SchemeItem, LineageInfo
+from app.ingest.web_search import search_official_schemes, ingest_live_search_result_to_corpus
 
 router = APIRouter(prefix="/v1/schemes", tags=["schemes"])
+
+
+class LiveSearchRequest(BaseModel):
+    query: str
+    ingest: bool = False
+    max_results: int = 5
+
+
+@router.get("/live-search")
+async def live_search_schemes(
+    q: str = Query(..., min_length=2, description="Scheme name or keyword to search across official .gov.in portals"),
+    db: Session = Depends(get_db)
+) -> list[dict[str, Any]]:
+    """
+    Search official Indian Government portals in real-time (.gov.in, .nic.in, pib.gov.in, myscheme.gov.in)
+    and return verified active scheme updates and provisions.
+    """
+    results = await search_official_schemes(query=q, max_results=5)
+    return results
+
+
+@router.post("/live-search")
+async def live_search_and_ingest(
+    req: LiveSearchRequest,
+    db: Session = Depends(get_db)
+) -> dict[str, Any]:
+    """
+    Search official government portals and optionally ingest new active schemes into the local verified corpus.
+    """
+    results = await search_official_schemes(query=req.query, max_results=req.max_results)
+    ingested_docs = []
+    if req.ingest:
+        for r in results:
+            doc = ingest_live_search_result_to_corpus(r, db)
+            ingested_docs.append({
+                "id": doc.id,
+                "title": doc.title,
+                "url": doc.url,
+                "doc_number": doc.doc_number
+            })
+
+    return {
+        "query": req.query,
+        "count": len(results),
+        "results": results,
+        "ingested_documents": ingested_docs
+    }
 
 
 @router.get("", response_model=list[SchemeItem])
