@@ -36,6 +36,7 @@ data/*.db
 data/*.sqlite
 data/*.sqlite3
 data/cards/
+data/audio/
 *.tsbuildinfo
 
 # Environment files & Secrets

@@ -1,6 +1,7 @@
 "use client";
 
 import { Download, MessageCircle } from "lucide-react";
+import { getApiUrl } from "@/lib/api";
 
 interface ShareSheetProps {
   checkId: string;
@@ -10,7 +11,7 @@ interface ShareSheetProps {
 }
 
 export default function ShareSheet({ checkId, publicId, verdict, shortText }: ShareSheetProps) {
-  const cardUrl = `http://localhost:8000/v1/checks/${checkId}/card.png`;
+  const cardUrl = getApiUrl(`/v1/checks/${checkId}/card.png`);
   const auditUrl = `${typeof window !== "undefined" ? window.location.origin : ""}/c/${publicId}`;
 
   const shareText = `*सरकारी सच (Sarkari Sach) निर्णय:* [${verdict}]\n\n${shortText}\n\nआधिकारिक साक्ष्य व जाँच रिपोर्ट: ${auditUrl}`;

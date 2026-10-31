@@ -3,6 +3,7 @@
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
+import { getApiUrl } from "@/lib/api";
 import {
   ShieldCheck,
   Send,
@@ -120,7 +121,7 @@ export default function HomePage() {
       formData.append("reply_lang", lang);
       if (selectedFile) formData.append("file", selectedFile);
 
-      const res = await fetch("http://localhost:8000/v1/checks", {
+      const res = await fetch(getApiUrl("/v1/checks"), {
         method: "POST",
         body: formData,
       });
@@ -133,7 +134,7 @@ export default function HomePage() {
       setActiveCheckId(data.id);
 
       // Listen to SSE progress
-      const eventSource = new EventSource(`http://localhost:8000/v1/checks/${data.id}/events`);
+      const eventSource = new EventSource(getApiUrl(`/v1/checks/${data.id}/events`));
 
       eventSource.addEventListener("stage", (evt: any) => {
         try {

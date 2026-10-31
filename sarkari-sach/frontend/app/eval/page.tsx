@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
+import { getApiUrl } from "@/lib/api";
 import {
   BarChart3,
   AlertTriangle,
@@ -20,8 +21,8 @@ export default function EvalDashboardPage() {
   useEffect(() => {
     // Fetch evaluation report & cases
     Promise.all([
-      fetch("http://localhost:8000/v1/eval/latest").then((r) => r.json()),
-      fetch("http://localhost:8000/v1/eval/cases").then((r) => r.json()),
+      fetch(getApiUrl("/v1/eval/latest")).then((r) => r.json()),
+      fetch(getApiUrl("/v1/eval/cases")).then((r) => r.json()),
     ])
       .then(([repData, casesData]) => {
         setReport(repData);

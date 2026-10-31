@@ -277,11 +277,45 @@ def get_check_card(id_or_public_id: str, size: str = "square", db: Session = Dep
 
 
 @router.get("/{id_or_public_id}/audio")
-def get_check_audio(id_or_public_id: str, lang: str = "hi"):
-    """Returns TTS audio or dummy audio bytes."""
-    # Simple silent/tone MP3 header for audio response
-    dummy_mp3 = b"\xff\xfb\x90d\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00" * 20
-    return Response(content=dummy_mp3, media_type="audio/mpeg")
+def get_check_audio(id_or_public_id: str, lang: str = "hi", db: Session = Depends(get_db)):
+    """Generates real spoken voice note in MP3 format with disk caching."""
+    check = db.query(Check).filter(
+        (Check.id == id_or_public_id) | (Check.public_id == id_or_public_id)
+    ).first()
+
+    # Determine text to speak
+    text_to_speak = "सरकारी सच सत्यापन परिणाम तैयार है।"
+    if check and check.explanation:
+        expl = check.explanation
+        text_to_speak = expl.get("tts_text") or expl.get("short") or text_to_speak
+
+    # Check cache on disk
+    from app.settings import settings
+    audio_dir = settings.STORAGE_DIR / "audio"
+    audio_dir.mkdir(parents=True, exist_ok=True)
+    cache_key = f"{check.id if check else id_or_public_id}_{lang}.mp3"
+    cache_path = audio_dir / cache_key
+
+    if cache_path.exists():
+        with open(cache_path, "rb") as f:
+            return Response(content=f.read(), media_type="audio/mpeg")
+
+    # Generate real MP3 audio via gTTS
+    try:
+        from gtts import gTTS
+        import io
+        tts_lang = "hi" if (lang == "hi" or check and check.lang_reply == "hi") else "en"
+        tts = gTTS(text=text_to_speak, lang=tts_lang)
+        fp = io.BytesIO()
+        tts.write_to_fp(fp)
+        audio_data = fp.getvalue()
+        with open(cache_path, "wb") as f:
+            f.write(audio_data)
+        return Response(content=audio_data, media_type="audio/mpeg")
+    except Exception:
+        # Offline or network fallback
+        dummy_mp3 = b"\xff\xfb\x90d\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00" * 40
+        return Response(content=dummy_mp3, media_type="audio/mpeg")
 
 
 @router.post("/{id_or_public_id}/feedback", status_code=201)

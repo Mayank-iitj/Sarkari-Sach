@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
+import { getApiUrl } from "@/lib/api";
 import VerdictBadge from "@/components/VerdictBadge";
 import DiffPanel from "@/components/DiffPanel";
 import LineageTimeline from "@/components/LineageTimeline";
@@ -32,7 +33,7 @@ export default function ResultPage() {
     if (!id) return;
     const fetchResult = async () => {
       try {
-        const res = await fetch(`http://localhost:8000/v1/checks/${id}`);
+        const res = await fetch(getApiUrl(`/v1/checks/${id}`));
         if (!res.ok) throw new Error("Failed to load result");
         const json = await res.json();
         setData(json);

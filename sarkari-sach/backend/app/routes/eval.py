@@ -6,7 +6,11 @@ from app.settings import settings
 
 router = APIRouter(prefix="/v1/eval", tags=["evaluation"])
 
-EVAL_REPORT_PATH = settings.STORAGE_DIR / "eval_report.json"
+EVAL_REPORT_PATHS = [
+    settings.STORAGE_DIR / "eval_report.json",
+    settings.CONFIG_DIR.parent / "eval" / "report.json",
+    settings.STORAGE_DIR.parent / "eval" / "report.json",
+]
 
 DEFAULT_REPORT = {
     "snapshot": "2026-10-31a",
@@ -84,12 +88,13 @@ DEFAULT_REPORT = {
 
 @router.get("/latest", response_model=EvalReportResponse)
 def get_eval_report():
-    if EVAL_REPORT_PATH.exists():
-        try:
-            with open(EVAL_REPORT_PATH, "r", encoding="utf-8") as f:
-                return json.load(f)
-        except Exception:
-            pass
+    for p in EVAL_REPORT_PATHS:
+        if p.exists():
+            try:
+                with open(p, "r", encoding="utf-8") as f:
+                    return json.load(f)
+            except Exception:
+                pass
     return DEFAULT_REPORT
 
 

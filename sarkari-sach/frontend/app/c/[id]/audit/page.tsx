@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
+import { getApiUrl } from "@/lib/api";
 import {
   ArrowLeft,
   FileSearch,
@@ -22,7 +23,7 @@ export default function AuditPage() {
 
   useEffect(() => {
     if (!id) return;
-    fetch(`http://localhost:8000/v1/checks/${id}`)
+    fetch(getApiUrl(`/v1/checks/${id}`))
       .then((res) => res.json())
       .then((json) => {
         setData(json);
