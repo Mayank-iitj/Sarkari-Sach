@@ -1,21 +1,85 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Geist+Mono:wght@100..900&family=Inter:wght@300;400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  --bg: #FAFAF7;
-  --surface: #FFFFFF;
-  --ink: #14181F;
-  --ink-2: #4A5565;
-  --line: #E3E6EA;
-  --brand: #1F3A5F;
-  --brand-accent: #E07A1F;
+  --obsidian-bg: #080808;
+  --silver-text: #E2E8F0;
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-hover: rgba(255, 255, 255, 0.20);
 }
 
 body {
-  background-color: var(--bg);
-  color: var(--ink);
-  font-family: "Noto Sans", "Noto Sans Devanagari", system-ui, sans-serif;
+  background-color: var(--obsidian-bg);
+  color: #FFFFFF;
+  font-family: 'Inter', system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
 }
 
+/* Typography Utility Classes */
+.font-editorial-serif {
+  font-family: 'DM Serif Display', Georgia, serif;
+}
+
+.font-editorial-mono {
+  font-family: 'Geist Mono', ui-monospace, monospace;
+}
+
+/* Glassmorphism Styles */
+.glass-obsidian {
+  background: rgba(255, 255, 255, 0.02);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.025);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.glass-card:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.22);
+  transform: translateY(-2px);
+}
+
+.silver-btn {
+  background: linear-gradient(135deg, #F8FAFC 0%, #94A3B8 100%);
+  color: #080808;
+  font-family: 'Geist Mono', monospace;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.silver-btn:hover {
+  box-shadow: 0 0 24px rgba(255, 255, 255, 0.25);
+  transform: translateY(-1px);
+}
+
+.mobile-nav-blur {
+  background: rgba(8, 8, 8, 0.85);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+/* Global Noise Texture */
+.noise-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.045;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+}
