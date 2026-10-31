@@ -75,6 +75,50 @@ def list_schemes(q: str | None = None, db: Session = Depends(get_db)):
     ]
 
 
+@router.get("/{scheme_id}")
+def get_scheme_details(scheme_id: str, db: Session = Depends(get_db)):
+    scheme = db.query(Scheme).filter(Scheme.id == scheme_id).first()
+    if not scheme:
+        # Check by id partial or slug
+        scheme = db.query(Scheme).filter(Scheme.name.ilike(f"%{scheme_id}%")).first()
+
+    # Find provisions
+    provisions = []
+    if scheme:
+        for p in scheme.provisions:
+            provisions.append({
+                "field": p.field,
+                "value": p.value,
+                "quote": p.quote,
+                "effective_from": p.effective_from.isoformat() if p.effective_from else None
+            })
+    
+    # Find matching documents
+    query_str = scheme.name if scheme else scheme_id
+    docs = db.query(Document).filter(
+        (Document.title.ilike(f"%{query_str}%")) |
+        (Document.text.ilike(f"%{query_str}%"))
+    ).order_by(Document.published_on.desc()).limit(10).all()
+
+    return {
+        "id": scheme.id if scheme else scheme_id,
+        "name": scheme.name if scheme else scheme_id.replace("-", " ").title(),
+        "name_aliases": scheme.name_aliases if scheme else [],
+        "issuer": scheme.issuer if scheme else "Government of India",
+        "provisions": provisions,
+        "documents": [
+            {
+                "id": d.id,
+                "title": d.title,
+                "doc_number": d.doc_number,
+                "published_on": d.published_on.isoformat() if d.published_on else None,
+                "url": d.url
+            }
+            for d in docs
+        ]
+    }
+
+
 @router.get("/{scheme_id}/lineage", response_model=LineageInfo)
 def get_scheme_lineage(scheme_id: str, db: Session = Depends(get_db)):
     scheme = db.query(Scheme).filter(Scheme.id == scheme_id).first()
