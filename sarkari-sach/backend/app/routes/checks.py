@@ -235,6 +235,17 @@ async def stream_check_events(check_id: str):
     )
 
 
+@router.post("/transcribe")
+async def transcribe_audio_endpoint(
+    file: UploadFile = File(...)
+):
+    """Transcribes an uploaded audio voice note (wav, webm, mp3, ogg) to text."""
+    from app.ingest.asr import transcribe_audio
+    audio_bytes = await file.read()
+    text, lang = transcribe_audio(audio_bytes, filename=file.filename or "recording.webm")
+    return {"text": text, "lang": lang}
+
+
 @router.get("/{id_or_public_id}", response_model=CheckDetailResponse)
 def get_check_result(id_or_public_id: str, db: Session = Depends(get_db)):
     check = db.query(Check).filter(
