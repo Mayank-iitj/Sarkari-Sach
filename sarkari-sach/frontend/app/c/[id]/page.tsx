@@ -31,19 +31,37 @@ export default function ResultPage() {
 
   useEffect(() => {
     if (!id) return;
+    let isMounted = true;
+    let pollTimeout: any = null;
+
     const fetchResult = async () => {
       try {
         const res = await fetch(getApiUrl(`/v1/checks/${id}`));
         if (!res.ok) throw new Error("Failed to load result");
         const json = await res.json();
+        if (!isMounted) return;
+
         setData(json);
+
+        // If pipeline is still processing in background, poll until completion
+        if (json.status !== "DONE" && json.status !== "ERROR") {
+          pollTimeout = setTimeout(fetchResult, 1500);
+        } else {
+          setLoading(false);
+        }
       } catch (err: any) {
+        if (!isMounted) return;
         setError(err.message || "Failed to load check result");
-      } finally {
         setLoading(false);
       }
     };
+
     fetchResult();
+
+    return () => {
+      isMounted = false;
+      if (pollTimeout) clearTimeout(pollTimeout);
+    };
   }, [id]);
 
   if (loading) {
