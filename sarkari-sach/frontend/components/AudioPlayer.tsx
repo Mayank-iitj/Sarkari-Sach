@@ -9,7 +9,7 @@ interface AudioPlayerProps {
   lang?: string;
 }
 
-export default function AudioPlayer({ audioUrl, ttsText, lang = "hi" }: AudioPlayerProps) {
+export default function AudioPlayer({ audioUrl, ttsText, lang = "en" }: AudioPlayerProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const synthRef = useRef<SpeechSynthesisUtterance | null>(null);
 
@@ -25,7 +25,7 @@ export default function AudioPlayer({ audioUrl, ttsText, lang = "hi" }: AudioPla
       return;
     }
 
-    const textToSpeak = ttsText || "सरकारी सच सत्यापन रिपोर्ट तैयार है।";
+    const textToSpeak = ttsText || (lang === "en" ? "Sarkari Sach verification report is ready." : "सरकारी सच सत्यापन रिपोर्ट तैयार है।");
     const utterance = new SpeechSynthesisUtterance(textToSpeak);
     utterance.lang = lang === "hi" ? "hi-IN" : "en-IN";
     utterance.rate = 0.95;
@@ -46,7 +46,7 @@ export default function AudioPlayer({ audioUrl, ttsText, lang = "hi" }: AudioPla
         className={`w-10 h-10 rounded-full flex items-center justify-center transition-transform active:scale-95 shadow-sm ${
           isPlaying ? "bg-red-600 text-white" : "bg-brand text-white hover:bg-brand-dark"
         }`}
-        title={isPlaying ? "Stop audio" : "Listen to audio reply"}
+        title={isPlaying ? "Stop audio" : "Listen to audio explanation"}
       >
         {isPlaying ? <Square className="w-4 h-4 fill-white" /> : <Play className="w-4 h-4 fill-white ml-0.5" />}
       </button>
@@ -55,14 +55,17 @@ export default function AudioPlayer({ audioUrl, ttsText, lang = "hi" }: AudioPla
         <div className="flex items-center gap-1.5">
           <Volume2 className="w-4 h-4 text-brand" />
           <span className="text-xs font-bold text-ink">
-            {isPlaying ? "ऑडियो चल रहा है..." : "बोलकर सुनें (Voice Reply)"}
+            {isPlaying
+              ? (lang === "en" ? "Playing audio..." : "ऑडियो चल रहा है...")
+              : (lang === "en" ? "Listen to Voice Reply (Spoken Audio)" : "बोलकर सुनें (Voice Reply)")}
           </span>
         </div>
         <p className="text-[11px] text-ink-subtle">
-          {ttsText ? `"${ttsText.slice(0, 75)}..."` : "रीडिंग स्तर: ग्रेड 6, आसान भाषा में उत्तर"}
+          {ttsText
+            ? `"${ttsText.slice(0, 75)}..."`
+            : (lang === "en" ? "Reading level: Grade 6 plain language summary" : "रीडिंग स्तर: ग्रेड 6, आसान भाषा में उत्तर")}
         </p>
       </div>
     </div>
   );
 }
-

@@ -18,34 +18,42 @@ import {
 
 const SAMPLES = [
   {
+    labelEn: "Fake Scheme Poster (Scene 1: FORGED)",
     labelHi: "नकली योजना (Scene 1: FORGED)",
-    labelEn: "Fake Scheme Poster",
+    descEn: "Viral fake registration demanding fee",
     type: "text",
-    text: "पीएम किसान योजना: सभी किसानों को ₹12,000 सालाना मिलेंगे। ₹250 शुल्क देकर तुरंत pmkisan-yojana.in पर आवेदन करें।",
+    textEn: "PM Kisan registration open. All eligible farmers get ₹12,000 per year. Pay ₹250 registration fee and apply immediately on pmkisan-yojana.in.",
+    textHi: "पीएम किसान योजना: सभी किसानों को ₹12,000 सालाना मिलेंगे। ₹250 शुल्क देकर तुरंत pmkisan-yojana.in पर आवेदन करें।",
   },
   {
+    labelEn: "Altered Notice (Scene 2: ALTERED)",
     labelHi: "बदली सूचना (Scene 2: ALTERED)",
-    labelEn: "Altered Notice",
+    descEn: "Modified circular with inflated benefit amount",
     type: "text",
-    text: "पीएम किसान सम्मान निधि: सरकार ने जारी की नई किस्त। सभी पात्र किसानों को मिलेंगे ₹12,000 सालाना। आधिकारिक वेबसाइट pmkisan.gov.in पर देखें।",
+    textEn: "Ministry of Agriculture Notification G.S.R. 552(E): Under PM-KISAN, the annual financial assistance has been increased from ₹6,000 to ₹12,000 per year.",
+    textHi: "पीएम किसान सम्मान निधि: सरकार ने जारी की नई किस्त। सभी पात्र किसानों को मिलेंगे ₹12,000 सालाना। आधिकारिक वेबसाइट pmkisan.gov.in पर देखें।",
   },
   {
+    labelEn: "Superseded Order (Scene 3: OUTDATED)",
     labelHi: "पुराना नियम (Scene 3: OUTDATED)",
-    labelEn: "Superseded Order",
+    descEn: "Old operational guidelines superseded by new gazette",
     type: "text",
-    text: "PM-KISAN दिशा-निर्देश F.No. 1-1/2019-Credit-I के अनुसार ₹6,000 की राशि प्राप्त करने हेतु क्या यह नियम अभी भी लागू है?",
+    textEn: "Is notification F.No. 1-1/2019-Credit-I dated 24th February 2019 still the operative rule for PM-KISAN disbursement?",
+    textHi: "PM-KISAN दिशा-निर्देश F.No. 1-1/2019-Credit-I के अनुसार ₹6,000 की राशि प्राप्त करने हेतु क्या यह नियम अभी भी लागू है?",
   },
   {
+    labelEn: "Unverified Rumor (Scene 4: ABSTAIN)",
     labelHi: "अपुष्ट अफ़वाह (Scene 4: ABSTAIN)",
-    labelEn: "Unverified Rumor",
+    descEn: "Vague ungrounded forward lacking gazette reference",
     type: "text",
-    text: "कल से पूरे देश में सभी नागरिकों के लिए नया नियम लागू हो रहा है, जल्दी देखें!",
+    textEn: "Government is giving free laptops next month to anyone who fills an online form, forward to everyone immediately!",
+    textHi: "कल से पूरे देश में सभी नागरिकों के लिए नया नियम लागू हो रहा है, जल्दी देखें!",
   },
 ];
 
 export default function HomePage() {
   const router = useRouter();
-  const [lang, setLang] = useState<"hi" | "en">("hi");
+  const [lang, setLang] = useState<"hi" | "en">("en");
   const [inputText, setInputText] = useState("");
   const [urlInput, setUrlInput] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -65,7 +73,7 @@ export default function HomePage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleSampleClick = (sample: typeof SAMPLES[0]) => {
-    setInputText(sample.text);
+    setInputText(lang === "en" ? sample.textEn : sample.textHi);
     setUrlInput("");
     setSelectedFile(null);
   };
@@ -93,7 +101,11 @@ export default function HomePage() {
       // Demo simulated voice note
       setIsRecording(true);
       setTimeout(() => {
-        setInputText("क्या पीएम किसान योजना की सम्मान निधि राशि ₹12,000 कर दी गई है और क्या ₹250 शुल्क लगेगा?");
+        setInputText(
+          lang === "en"
+            ? "Has the PM-KISAN annual installment been increased to ₹12,000 and is there a ₹250 registration fee?"
+            : "क्या पीएम किसान योजना की सम्मान निधि राशि ₹12,000 कर दी गई है और क्या ₹250 शुल्क लगेगा?"
+        );
         setIsRecording(false);
       }, 1500);
     } else {
@@ -108,10 +120,10 @@ export default function HomePage() {
     setIsSubmitting(true);
     setLiveSignals([]);
     setStages({
-      NORMALIZED: { status: "running", note: "Reading text & detecting language..." },
-      RETRIEVED: { status: "pending", note: "Searching PIB, Gazette, myScheme..." },
-      FORENSICS: { status: "pending", note: "Link, PDF & document analysis..." },
-      COMPARED: { status: "pending", note: "Verbatim clause-by-clause comparison..." },
+      NORMALIZED: { status: "running", note: lang === "en" ? "Reading text & detecting language..." : "Reading text & detecting language..." },
+      RETRIEVED: { status: "pending", note: lang === "en" ? "Searching PIB, Gazette, myScheme..." : "Searching PIB, Gazette, myScheme..." },
+      FORENSICS: { status: "pending", note: lang === "en" ? "Link, PDF & document analysis..." : "Link, PDF & document analysis..." },
+      COMPARED: { status: "pending", note: lang === "en" ? "Verbatim clause-by-clause comparison..." : "Verbatim clause-by-clause comparison..." },
     });
 
     try {
@@ -160,10 +172,10 @@ export default function HomePage() {
 
       eventSource.onerror = () => {
         eventSource.close();
-        // Fallback: poll result
+        // Fallback: route directly to result
         setTimeout(() => {
           router.push(`/c/${data.id}`);
-        }, 1200);
+        }, 800);
       };
     } catch (err) {
       console.error(err);
@@ -180,15 +192,19 @@ export default function HomePage() {
         <div className="text-center space-y-3 mb-8">
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold">
             <ShieldCheck className="w-4 h-4 text-emerald-600" />
-            <span>सत्यापित प्राथमिक स्रोत (PIB · e-Gazette · myScheme)</span>
+            <span>
+              {lang === "en"
+                ? "Verified Primary Sources (PIB · e-Gazette · myScheme)"
+                : "सत्यापित प्राथमिक स्रोत (PIB · e-Gazette · myScheme)"}
+            </span>
           </div>
           <h1 className="text-3xl sm:text-5xl font-extrabold text-ink tracking-tight">
-            {lang === "hi" ? "फॉरवर्ड आया? सच जाँचें।" : "Got a Forward? Verify the Truth."}
+            {lang === "en" ? "Got a forward? Verify the truth." : "फॉरवर्ड आया? सच जाँचें।"}
           </h1>
           <p className="text-sm sm:text-base text-ink-subtle max-w-xl mx-auto leading-relaxed">
-            {lang === "hi"
-              ? "व्हाट्सएप सर्कुलर, सरकारी योजना पोस्टर, बदली तारीख या संदिग्ध लिंक पेस्ट करें। हूबहू आधिकारिक धारा उद्धरण के साथ निष्पक्ष फैसला पाएं।"
-              : "Verify government claims, viral notices, scheme posters, and links against official Central Government gazettes with verbatim clause citations."}
+            {lang === "en"
+              ? "Paste any viral WhatsApp message, government scheme poster, or circular. Get an impartial verdict backed by verbatim primary gazette citations."
+              : "व्हाट्सएप सर्कुलर, सरकारी योजना पोस्टर, बदली तारीख या संदिग्ध लिंक पेस्ट करें। हूबहू आधिकारिक धारा उद्धरण के साथ निष्पक्ष फैसला पाएं।"}
           </p>
         </div>
 
@@ -201,9 +217,9 @@ export default function HomePage() {
                 onChange={(e) => setInputText(e.target.value)}
                 rows={4}
                 placeholder={
-                  lang === "hi"
-                    ? "यहाँ व्हाट्सएप संदेश या संदिग्ध सर्कुलर का टेक्स्ट पेस्ट करें..."
-                    : "Paste forwarded message, scheme details, or circular text here..."
+                  lang === "en"
+                    ? "Paste forwarded WhatsApp message, circular text, or scheme claims here..."
+                    : "यहाँ व्हाट्सएप संदेश या संदिग्ध सर्कुलर का टेक्स्ट पेस्ट करें..."
                 }
                 className="w-full p-4 rounded-2xl bg-canvas border border-canvas-line text-ink text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand transition-all resize-none leading-relaxed"
                 disabled={isSubmitting}
@@ -217,7 +233,11 @@ export default function HomePage() {
                 type="text"
                 value={urlInput}
                 onChange={(e) => setUrlInput(e.target.value)}
-                placeholder="वेबसाइट या लिंक (e.g. pmkisan-yojana.in)"
+                placeholder={
+                  lang === "en"
+                    ? "Website or link to check (e.g. pmkisan-yojana.in)"
+                    : "वेबसाइट या लिंक (e.g. pmkisan-yojana.in)"
+                }
                 className="bg-transparent w-full focus:outline-none text-ink placeholder:text-ink-muted text-xs sm:text-sm"
                 disabled={isSubmitting}
               />
@@ -256,7 +276,7 @@ export default function HomePage() {
                   disabled={isSubmitting}
                 >
                   <ImageIcon className="w-4 h-4 text-brand" />
-                  <span className="hidden sm:inline">फोटो / PDF</span>
+                  <span className="hidden sm:inline">{lang === "en" ? "Photo / PDF" : "फोटो / PDF"}</span>
                 </button>
 
                 <button
@@ -270,7 +290,11 @@ export default function HomePage() {
                   disabled={isSubmitting}
                 >
                   {isRecording ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4 text-brand" />}
-                  <span>{isRecording ? "सुन रहे हैं..." : "बोलकर"}</span>
+                  <span>
+                    {isRecording
+                      ? lang === "en" ? "Listening..." : "सुन रहे हैं..."
+                      : lang === "en" ? "Voice Note" : "बोलकर"}
+                  </span>
                 </button>
               </div>
 
@@ -282,11 +306,11 @@ export default function HomePage() {
                 {isSubmitting ? (
                   <>
                     <Loader2 className="w-4 h-4 animate-spin" />
-                    <span>जाँच हो रही है...</span>
+                    <span>{lang === "en" ? "Verifying..." : "जाँच हो रही है..."}</span>
                   </>
                 ) : (
                   <>
-                    <span>सच जाँचें</span>
+                    <span>{lang === "en" ? "Verify Claim" : "सच जाँचें"}</span>
                     <Send className="w-3.5 h-3.5" />
                   </>
                 )}
@@ -300,7 +324,7 @@ export default function HomePage() {
           <div className="bg-white rounded-3xl border border-canvas-line shadow-sm p-6 mb-8 space-y-4 animate-in fade-in duration-300">
             <h3 className="text-sm font-bold text-ink flex items-center gap-2">
               <Sparkles className="w-4 h-4 text-brand-accent animate-spin" />
-              <span>सत्यापन प्रक्रिया (Real-time Pipeline)</span>
+              <span>{lang === "en" ? "Verification Pipeline (Real-Time)" : "सत्यापन प्रक्रिया (Real-time Pipeline)"}</span>
             </h3>
 
             <div className="space-y-3">
@@ -333,7 +357,7 @@ export default function HomePage() {
             {liveSignals.length > 0 && (
               <div className="pt-3 border-t border-canvas-line">
                 <span className="text-xs font-bold text-amber-900 block mb-1">
-                  खोजी गई तकनीकी चेतावनियाँ (Forensic Signals):
+                  {lang === "en" ? "Detected Forensic Signals:" : "खोजी गई तकनीकी चेतावनियाँ (Forensic Signals):"}
                 </span>
                 <div className="flex flex-wrap gap-1.5">
                   {liveSignals.map((sig, i) => (
@@ -354,7 +378,7 @@ export default function HomePage() {
         <div className="space-y-3">
           <div className="flex items-center gap-2 text-xs font-bold text-ink-subtle uppercase tracking-wider">
             <Sparkles className="w-3.5 h-3.5 text-brand-accent" />
-            <span>{lang === "hi" ? "या आज़माएँ (डेमो परिदृश्य):" : "Or try live demo scenes:"}</span>
+            <span>{lang === "en" ? "Or try live demo scenarios:" : "या आज़माएँ (डेमो परिदृश्य):"}</span>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
@@ -367,12 +391,12 @@ export default function HomePage() {
               >
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-bold text-brand group-hover:text-brand-accent transition-colors">
-                    {lang === "hi" ? sample.labelHi : sample.labelEn}
+                    {lang === "en" ? sample.labelEn : sample.labelHi}
                   </span>
-                  <span className="text-[10px] text-ink-muted">लोड करें ↗</span>
+                  <span className="text-[10px] text-ink-muted">{lang === "en" ? "Load ↗" : "लोड करें ↗"}</span>
                 </div>
                 <p className="text-xs text-ink-subtle truncate mt-1">
-                  "{sample.text}"
+                  "{lang === "en" ? sample.textEn : sample.textHi}"
                 </p>
               </button>
             ))}
@@ -381,10 +405,9 @@ export default function HomePage() {
 
         {/* Rule Zero Note */}
         <div className="mt-12 text-center text-xs text-ink-muted leading-relaxed max-w-md mx-auto">
-          <strong>नियम शून्य:</strong> बिना सरकारी उद्धरण कोई निर्णय नहीं। जब संदेह हो, पुष्टि अस्वीकार (No citation, no verdict. When unsure, abstain.)
+          <strong>Rule Zero:</strong> No citation, no verdict. When unsure, abstain. (नियम शून्य: बिना सरकारी उद्धरण कोई निर्णय नहीं। जब संदेह हो, पुष्टि अस्वीकार।)
         </div>
       </main>
     </div>
   );
 }
-

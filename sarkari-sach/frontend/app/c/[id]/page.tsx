@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
-import { getApiUrl } from "@/lib/api";
 import VerdictBadge from "@/components/VerdictBadge";
 import DiffPanel from "@/components/DiffPanel";
 import LineageTimeline from "@/components/LineageTimeline";
@@ -12,6 +11,7 @@ import SignalsTable from "@/components/SignalsTable";
 import EvidenceViewer from "@/components/EvidenceViewer";
 import AudioPlayer from "@/components/AudioPlayer";
 import ShareSheet from "@/components/ShareSheet";
+import { getApiUrl } from "@/lib/api";
 import {
   ArrowLeft,
   ExternalLink,
@@ -24,7 +24,7 @@ export default function ResultPage() {
   const router = useRouter();
   const id = params?.id as string;
 
-  const [lang, setLang] = useState<"hi" | "en">("hi");
+  const [lang, setLang] = useState<"hi" | "en">("en");
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -52,7 +52,9 @@ export default function ResultPage() {
         <Navbar lang={lang} setLang={setLang} />
         <div className="flex-1 flex flex-col items-center justify-center space-y-4">
           <div className="w-10 h-10 border-4 border-brand border-t-transparent rounded-full animate-spin" />
-          <p className="text-sm font-semibold text-ink-subtle">सत्यापन परिणाम लोड हो रहा है...</p>
+          <p className="text-sm font-semibold text-ink-subtle">
+            {lang === "en" ? "Loading verification result..." : "सत्यापन परिणाम लोड हो रहा है..."}
+          </p>
         </div>
       </div>
     );
@@ -64,14 +66,18 @@ export default function ResultPage() {
         <Navbar lang={lang} setLang={setLang} />
         <div className="flex-1 max-w-xl mx-auto w-full px-4 py-16 text-center space-y-4">
           <AlertOctagon className="w-12 h-12 text-red-600 mx-auto" />
-          <h2 className="text-xl font-bold text-ink">परिणाम नहीं मिला</h2>
-          <p className="text-sm text-ink-subtle">{error || "यह जाँच उपलब्ध नहीं है या समाप्त हो चुकी है।"}</p>
+          <h2 className="text-xl font-bold text-ink">
+            {lang === "en" ? "Result Not Found" : "परिणाम नहीं मिला"}
+          </h2>
+          <p className="text-sm text-ink-subtle">
+            {error || (lang === "en" ? "This check does not exist or has expired." : "यह जाँच उपलब्ध नहीं है या समाप्त हो चुकी है।")}
+          </p>
           <Link
             href="/"
             className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-brand text-white text-xs font-bold"
           >
             <ArrowLeft className="w-4 h-4" />
-            <span>होम पर वापस जाएं</span>
+            <span>{lang === "en" ? "Back to Home" : "होम पर वापस जाएं"}</span>
           </Link>
         </div>
       </div>
@@ -99,7 +105,7 @@ export default function ResultPage() {
             className="inline-flex items-center gap-1.5 text-xs font-bold text-ink-subtle hover:text-brand transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
-            <span>नई जाँच करें</span>
+            <span>{lang === "en" ? "Verify New Claim" : "नई जाँच करें"}</span>
           </Link>
 
           <Link
@@ -107,35 +113,35 @@ export default function ResultPage() {
             className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-white border border-canvas-line text-xs font-bold text-brand hover:bg-slate-50 transition-colors shadow-sm"
           >
             <FileSearch className="w-3.5 h-3.5" />
-            <span>पूर्ण ऑडिट ट्रेल (Audit Page) →</span>
+            <span>{lang === "en" ? "Full Audit Trail →" : "पूर्ण ऑडिट ट्रेल (Audit Page) →"}</span>
           </Link>
         </div>
 
-        {/* 1. Verdict Badge (56px) */}
+        {/* 1. Verdict Badge */}
         <VerdictBadge
           verdict={verdict}
           confidence={data.confidence}
           confidenceBand={data.confidence_band}
         />
 
-        {/* 2. One-sentence plain language summary */}
+        {/* 2. Plain Language Summary */}
         <div className="bg-white rounded-2xl border border-canvas-line p-5 sm:p-6 my-6 shadow-sm space-y-3">
           <h2 className="text-lg sm:text-xl font-extrabold text-ink leading-snug">
-            {explanation.short || "जाँच परिणाम तैयार है।"}
+            {explanation.short || (lang === "en" ? "Verification complete." : "जाँच परिणाम तैयार है।")}
           </h2>
 
-          {/* Spoken voice note player */}
+          {/* Voice note player */}
           <AudioPlayer
             audioUrl={explanation.audio_url}
             ttsText={explanation.tts_text || explanation.short}
             lang={explanation.lang || lang}
           />
 
-          {/* Actionable Steps / क्या करें */}
+          {/* Recommended Actions */}
           {steps.length > 0 && (
             <div className="pt-3 border-t border-canvas-line space-y-2">
               <span className="text-xs font-bold uppercase tracking-wider text-ink-subtle block">
-                क्या करें (Recommended Actions):
+                {lang === "en" ? "Recommended Actions:" : "क्या करें (Recommended Actions):"}
               </span>
               <ul className="space-y-1.5">
                 {steps.map((st: string, idx: number) => (
@@ -151,7 +157,7 @@ export default function ResultPage() {
           {/* Warnings */}
           {warnings.length > 0 && (
             <div className="p-3 rounded-xl bg-red-50 border border-red-200 text-xs text-red-900 font-medium">
-              ⚠ <strong>सतर्कता:</strong> {warnings[0]}
+              ⚠ <strong>{lang === "en" ? "Caution:" : "सतर्कता:"}</strong> {warnings[0]}
             </div>
           )}
         </div>
@@ -161,7 +167,7 @@ export default function ResultPage() {
           checkId={data.id}
           publicId={data.public_id}
           verdict={verdict}
-          shortText={explanation.short || "सरकारी सच सत्यापन परिणाम"}
+          shortText={explanation.short || (lang === "en" ? "Sarkari Sach Verification Result" : "सरकारी सच सत्यापन परिणाम")}
         />
 
         {/* 4. Diff Panel (for ALTERED notices) */}
@@ -185,25 +191,29 @@ export default function ResultPage() {
         {/* 8. Searched Sources if Abstaining */}
         {verdict === "UNVERIFIABLE" && (
           <div className="bg-white rounded-2xl border border-canvas-line p-5 my-6 space-y-3">
-            <h3 className="text-sm font-bold text-ink">हमने ये आधिकारिक स्रोत खोजे:</h3>
+            <h3 className="text-sm font-bold text-ink">
+              {lang === "en" ? "Searched Official Repositories:" : "हमने ये आधिकारिक स्रोत खोजे:"}
+            </h3>
             <ul className="text-xs text-ink-subtle space-y-1">
-              <li>• प्रेस सूचना ब्यूरो (pib.gov.in)</li>
-              <li>• भारत का राजपत्र (egazette.gov.in)</li>
-              <li>• राष्ट्रीय योजना पोर्टल (myscheme.gov.in)</li>
+              <li>• Press Information Bureau (pib.gov.in)</li>
+              <li>• The Gazette of India (egazette.gov.in)</li>
+              <li>• National Scheme Portal (myscheme.gov.in)</li>
             </ul>
             <p className="text-xs text-ink-subtle bg-slate-50 p-3 rounded-lg border border-slate-200">
-              आधिकारिक रिकॉर्ड्स में इस दावे का कोई पुष्ट प्रमाण नहीं मिला। जब तक आधिकारिक अधिसूचना न दिखे, इसे आगे फॉरवर्ड न करें।
+              {lang === "en"
+                ? "No official notification or primary source matched this claim. In accordance with Rule Zero, the system abstains from validating unverified forwards. Do not forward this claim without an authentic notification."
+                : "आधिकारिक रिकॉर्ड्स में इस दावे का कोई पुष्ट प्रमाण नहीं मिला। जब तक आधिकारिक अधिसूचना न दिखे, इसे आगे फॉरवर्ड न करें।"}
             </p>
           </div>
         )}
 
-        {/* Bottom Permanent Audit Link */}
+        {/* Bottom Audit Link */}
         <div className="text-center pt-6 pb-12">
           <Link
             href={`/c/${id}/audit`}
             className="text-xs font-bold text-brand hover:underline inline-flex items-center gap-1"
           >
-            <span>इस परिणाम का पूर्ण तकनीकी व फोरेंसिक्स ऑडिट देखें (Audit Page)</span>
+            <span>{lang === "en" ? "View full technical & forensic audit log (Audit Page)" : "इस परिणाम का पूर्ण तकनीकी व फोरेंसिक्स ऑडिट देखें (Audit Page)"}</span>
             <ExternalLink className="w-3.5 h-3.5" />
           </Link>
         </div>
@@ -211,4 +221,3 @@ export default function ResultPage() {
     </div>
   );
 }
-

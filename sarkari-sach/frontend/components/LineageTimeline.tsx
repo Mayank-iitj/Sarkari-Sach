@@ -24,11 +24,11 @@ export default function LineageTimeline({ timeline, superseded, expired }: Linea
       <div className="flex items-center justify-between pb-4 border-b border-canvas-line mb-4">
         <div className="flex items-center gap-2">
           <History className="w-5 h-5 text-amber-600" />
-          <h3 className="text-base font-bold text-ink">नियम का इतिहास (Lineage Timeline)</h3>
+          <h3 className="text-base font-bold text-ink">Order Lineage & Supersession Timeline</h3>
         </div>
         {superseded && (
           <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-red-100 text-red-800 border border-red-200">
-            नियम अधिक्रमित (Superseded)
+            Order Superseded (Outdated)
           </span>
         )}
       </div>
@@ -49,30 +49,27 @@ export default function LineageTimeline({ timeline, superseded, expired }: Linea
 
               <div className="space-y-1">
                 <div className="flex items-center gap-2">
-                  <span className="text-xs font-bold text-ink-subtle">
-                    {item.date || "Notification Date"}
+                  <span className="text-xs font-mono font-bold text-ink-subtle">
+                    {item.date}
                   </span>
-                  {item.relation && (
-                    <span className="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-amber-100 text-amber-800">
-                      {item.relation}
+                  {isLatest ? (
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800">
+                      Currently Operative
                     </span>
-                  )}
-                  {isLatest && superseded && (
-                    <span className="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-emerald-100 text-emerald-800">
-                      वर्तमान में प्रभावी (Currently Active)
+                  ) : (
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-amber-100 text-amber-800">
+                      Historical Version
                     </span>
                   )}
                 </div>
 
-                <h4 className="text-sm font-semibold text-ink">
-                  {item.title || "Government Notification"}
+                <h4 className="text-sm font-bold text-ink">
+                  {item.title}
                 </h4>
 
-                {item.change && (
-                  <p className="text-xs text-ink-subtle bg-slate-50 p-2.5 rounded-lg border border-slate-100">
-                    {item.change}
-                  </p>
-                )}
+                <p className="text-xs text-ink-subtle">
+                  {item.change}
+                </p>
               </div>
             </div>
           );
@@ -81,4 +78,3 @@ export default function LineageTimeline({ timeline, superseded, expired }: Linea
     </div>
   );
 }
-

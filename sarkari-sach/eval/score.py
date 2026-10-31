@@ -37,3 +37,4 @@ if __name__ == "__main__":
     parser.add_argument("--report", action="store_true", default=True)
     args = parser.parse_args()
     print_report()
+

@@ -23,7 +23,7 @@ export default function SignalsTable({ signals }: SignalsTableProps) {
       <div className="px-5 py-3.5 bg-slate-50 border-b border-canvas-line flex items-center justify-between">
         <div className="flex items-center gap-2 text-ink font-bold text-sm">
           <ShieldAlert className="w-4 h-4 text-brand" />
-          <span>फ़ॉरेंसिक्स साक्ष्य व तकनीकी संकेत (Forensic Signals)</span>
+          <span>Forensic Evidence & Technical Signals</span>
         </div>
         <span className="text-xs font-semibold text-ink-subtle">
           {signals.length} {signals.length === 1 ? "signal" : "signals"} detected
@@ -73,4 +73,3 @@ export default function SignalsTable({ signals }: SignalsTableProps) {
     </div>
   );
 }
-

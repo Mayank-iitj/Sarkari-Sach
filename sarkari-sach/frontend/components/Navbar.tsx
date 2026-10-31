@@ -18,7 +18,7 @@ export default function Navbar({ lang, setLang }: NavbarProps) {
           </div>
           <div>
             <span className="font-bold text-lg text-ink tracking-tight flex items-center gap-1.5">
-              सरकारी सच <span className="text-xs font-normal text-brand-accent bg-orange-50 px-1.5 py-0.5 rounded border border-orange-200">2.0</span>
+              Sarkari Sach <span className="text-xs font-normal text-brand-accent bg-orange-50 px-1.5 py-0.5 rounded border border-orange-200">2.0</span>
             </span>
             <p className="text-[11px] text-ink-subtle -mt-1 hidden sm:block">
               Primary Source Verifier · Central Government
@@ -32,7 +32,7 @@ export default function Navbar({ lang, setLang }: NavbarProps) {
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium text-ink-subtle hover:text-brand hover:bg-slate-100 transition-colors"
           >
             <BarChart3 className="w-4 h-4" />
-            <span className="hidden sm:inline">सटीकता / Eval</span>
+            <span className="hidden sm:inline">Accuracy & Eval</span>
             <span className="sm:hidden">Eval</span>
           </Link>
           <Link
@@ -40,7 +40,7 @@ export default function Navbar({ lang, setLang }: NavbarProps) {
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium text-ink-subtle hover:text-brand hover:bg-slate-100 transition-colors"
           >
             <Info className="w-4 h-4" />
-            <span className="hidden sm:inline">प्रणाली / About</span>
+            <span className="hidden sm:inline">About & Rules</span>
             <span className="sm:hidden">About</span>
           </Link>
 
@@ -48,15 +48,14 @@ export default function Navbar({ lang, setLang }: NavbarProps) {
           <button
             onClick={() => setLang(lang === "hi" ? "en" : "hi")}
             className="ml-2 px-3 py-1 rounded-full text-xs font-semibold bg-brand text-white hover:bg-brand-dark transition-colors shadow-sm flex items-center gap-1"
-            title="Toggle Language / भाषा बदलें"
+            title={lang === "en" ? "Switch to Hindi (हिन्दी)" : "Switch to English"}
           >
-            <span>{lang === "hi" ? "हिं" : "EN"}</span>
-            <span className="opacity-70">|</span>
-            <span className="opacity-70 text-[10px]">{lang === "hi" ? "EN" : "हिं"}</span>
+            <span className={lang === "en" ? "font-bold underline" : "opacity-80"}>EN</span>
+            <span className="opacity-50">/</span>
+            <span className={lang === "hi" ? "font-bold underline" : "opacity-80"}>हिन्दी</span>
           </button>
         </nav>
       </div>
     </header>
   );
 }
-
