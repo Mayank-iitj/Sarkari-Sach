@@ -168,6 +168,11 @@ export default function ResultPage() {
           publicId={data.public_id}
           verdict={verdict}
           shortText={explanation.short || (lang === "en" ? "Sarkari Sach Verification Result" : "सरकारी सच सत्यापन परिणाम")}
+          claimText={diffs[0]?.claim || data.input_content || "Government Scheme Claim"}
+          officialText={diffs[0]?.official || explanation.short || "Verified Official Record"}
+          citation={evidence[0]?.document?.title || evidence[0]?.document?.doc_number || "Official Gazette / PIB Record"}
+          warning={warnings[0] || ""}
+          lang={lang}
         />
 
         {/* 4. Diff Panel (for ALTERED notices) */}
