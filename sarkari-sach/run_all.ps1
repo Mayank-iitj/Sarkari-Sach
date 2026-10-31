@@ -10,6 +10,22 @@ Write-Host " Web App:  http://localhost:3000                           " -Foregr
 Write-Host " WhatsApp: http://localhost:3000/whatsapp                  " -ForegroundColor Yellow
 Write-Host "==========================================================" -ForegroundColor Cyan
 
+# Pre-clear ports 8000 and 3000 to prevent EADDRINUSE
+$ports = @(3000, 8000)
+foreach ($p in $ports) {
+    $conn = Get-NetTCPConnection -LocalPort $p -ErrorAction SilentlyContinue
+    if ($conn) {
+        $pids = $conn | Select-Object -ExpandProperty OwningProcess -Unique
+        foreach ($procId in $pids) {
+            if ($procId -gt 4) {
+                Write-Host "Clearing lingering process $procId on port $p..." -ForegroundColor Yellow
+                Stop-Process -Id $procId -Force -ErrorAction SilentlyContinue
+            }
+        }
+    }
+}
+Start-Sleep -Milliseconds 600
+
 Start-Process powershell -ArgumentList "-NoExit", "-File", "`"$backendScript`""
 Start-Process powershell -ArgumentList "-NoExit", "-File", "`"$frontendScript`""
 
