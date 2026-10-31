@@ -1,0 +1,17 @@
+{
+  "python.defaultInterpreterPath": "C:\\Users\\MS\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+  "python.analysis.extraPaths": [
+    "${workspaceFolder}/sarkari-sach/backend",
+    "${workspaceFolder}/sarkari-sach",
+    "${workspaceFolder}/backend",
+    "${workspaceFolder}"
+  ],
+  "python.autoComplete.extraPaths": [
+    "${workspaceFolder}/sarkari-sach/backend",
+    "${workspaceFolder}/sarkari-sach",
+    "${workspaceFolder}/backend",
+    "${workspaceFolder}"
+  ],
+  "python.analysis.typeCheckingMode": "off"
+}
+

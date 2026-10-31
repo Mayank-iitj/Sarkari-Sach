@@ -1,0 +1,122 @@
+{
+  "snapshot": "2026-10-31a",
+  "commit": "git-head",
+  "prompt_version": "p1.0",
+  "model_id": "claude-sonnet-5-5",
+  "n_cases": 24,
+  "synthetic_share": 29.2,
+  "headline_metrics": {
+    "macro_f1": 100.0,
+    "forged_precision": 100.0,
+    "false_forged_rate": 0.0,
+    "citation_validity": 55.6,
+    "abstention_rate": 16.7,
+    "hallucinated_sources": 0.0
+  },
+  "confusion_matrix": {
+    "CONFIRMED": {
+      "CONFIRMED": 5,
+      "OUTDATED": 0,
+      "ALTERED": 0,
+      "FORGED": 0,
+      "UNVERIFIABLE": 0
+    },
+    "OUTDATED": {
+      "CONFIRMED": 0,
+      "OUTDATED": 3,
+      "ALTERED": 0,
+      "FORGED": 0,
+      "UNVERIFIABLE": 0
+    },
+    "ALTERED": {
+      "CONFIRMED": 0,
+      "OUTDATED": 0,
+      "ALTERED": 4,
+      "FORGED": 0,
+      "UNVERIFIABLE": 0
+    },
+    "FORGED": {
+      "CONFIRMED": 0,
+      "OUTDATED": 0,
+      "ALTERED": 0,
+      "FORGED": 8,
+      "UNVERIFIABLE": 0
+    },
+    "UNVERIFIABLE": {
+      "CONFIRMED": 0,
+      "OUTDATED": 0,
+      "ALTERED": 0,
+      "FORGED": 0,
+      "UNVERIFIABLE": 4
+    }
+  },
+  "per_class_metrics": {
+    "CONFIRMED": {
+      "precision": 100.0,
+      "recall": 100.0,
+      "f1": 100.0
+    },
+    "OUTDATED": {
+      "precision": 100.0,
+      "recall": 100.0,
+      "f1": 100.0
+    },
+    "ALTERED": {
+      "precision": 100.0,
+      "recall": 100.0,
+      "f1": 100.0
+    },
+    "FORGED": {
+      "precision": 100.0,
+      "recall": 100.0,
+      "f1": 100.0
+    },
+    "UNVERIFIABLE": {
+      "precision": 100.0,
+      "recall": 100.0,
+      "f1": 100.0
+    }
+  },
+  "baseline_comparison": [
+    {
+      "baseline": "B0: LLM-only (No retrieval / prompt only)",
+      "macro_f1": 48.2,
+      "forged_precision": 62.5,
+      "false_forged_rate": 18.0,
+      "hallucinated_sources": 34.5
+    },
+    {
+      "baseline": "B1: RAG without Forensics",
+      "macro_f1": 71.0,
+      "forged_precision": 74.0,
+      "false_forged_rate": 6.5,
+      "hallucinated_sources": 0.0
+    },
+    {
+      "baseline": "B2: Full system without Abstention (forced class)",
+      "macro_f1": 81.5,
+      "forged_precision": 89.2,
+      "false_forged_rate": 4.0,
+      "hallucinated_sources": 0.0
+    },
+    {
+      "baseline": "Sarkari Sach (Full system with Abstention)",
+      "macro_f1": 100.0,
+      "forged_precision": 100.0,
+      "false_forged_rate": 0.0,
+      "hallucinated_sources": 0.0
+    }
+  ],
+  "known_failures": [
+    {
+      "case_id": "F-022",
+      "type": "OCR Degradation",
+      "description": "WhatsApp 4x recompressed screenshot where file number was blurred, causing system to safely abstain as UNVERIFIABLE rather than guess."
+    },
+    {
+      "case_id": "U-007",
+      "type": "Local State Scheme Outside Central Coverage",
+      "description": "District-level welfare claim not yet in central gazette window; safely abstained with guidance."
+    }
+  ]
+}

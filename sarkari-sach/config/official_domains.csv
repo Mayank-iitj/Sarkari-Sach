@@ -1,0 +1,13 @@
+domain,org,source_id,notes
+pib.gov.in,Press Information Bureau,pib,
+egazette.gov.in,e-Gazette of India,gazette,verify exact host in Phase 0
+egazette.nic.in,e-Gazette of India,gazette,verify exact host in Phase 0
+myscheme.gov.in,myScheme,myscheme,
+indiacode.nic.in,India Code,indiacode,
+rbi.org.in,Reserve Bank of India,rbi,
+sebi.gov.in,SEBI,sebi,
+gst.gov.in,GST Portal,gst,
+incometax.gov.in,Income Tax Dept,gst,
+pmkisan.gov.in,PM-KISAN,scheme-portal,
+scholarships.gov.in,National Scholarship Portal,scheme-portal,
+uidai.gov.in,UIDAI,scheme-portal,

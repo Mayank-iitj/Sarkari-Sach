@@ -1,0 +1,21 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg: #FAFAF7;
+  --surface: #FFFFFF;
+  --ink: #14181F;
+  --ink-2: #4A5565;
+  --line: #E3E6EA;
+  --brand: #1F3A5F;
+  --brand-accent: #E07A1F;
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--ink);
+  font-family: "Noto Sans", "Noto Sans Devanagari", system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+

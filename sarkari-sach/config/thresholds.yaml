@@ -1,0 +1,9 @@
+retrieval_min_conf: 0.55
+debunk_min_score: 0.85
+debunk_near_min_score: 0.70
+match_ratio_for_confirmed: 0.80
+min_hard_groups_for_forged: 2
+allow_single_group_forged: false      # policy flag; default off (see FORENSICS.md §4)
+confidence_weights: { retrieval: 0.4, field_match: 0.3, citation_validity: 0.2, no_conflict: 0.1 }
+confidence_bands: { low: 0.5, medium: 0.75 }
+key_fields: [amount, deadline, eligibility, fee, benefit]
