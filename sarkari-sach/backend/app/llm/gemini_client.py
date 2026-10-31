@@ -120,3 +120,4 @@ CRITICAL: Return ONLY valid raw JSON matching this schema, with no markdown code
 
         from app.llm.fake_client import FakeClient
         return FakeClient().text(system, user, max_tokens=max_tokens)
+

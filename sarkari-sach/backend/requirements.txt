@@ -16,4 +16,5 @@ gTTS>=2.5.0
 SpeechRecognition>=3.10.0
 anthropic>=0.34.0
 openai>=1.40.0
-
+ddgs>=9.16.1
+beautifulsoup4>=4.12.0

@@ -56,7 +56,8 @@ export default function ShareSheet({
 }: ShareSheetProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [copied, setCopied] = useState(false);
-  const [showPreview, setShowPreview] = useState(true);
+  const [downloading, setDownloading] = useState(false);
+  const [showPreview, setShowPreview] = useState(false);
 
   const cardUrl = getApiUrl(`/v1/checks/${checkId}/card.png`);
   const auditUrl = `${typeof window !== "undefined" ? window.location.origin : ""}/c/${publicId}`;
@@ -162,7 +163,7 @@ export default function ShareSheet({
     curY += 16;
 
     const claimLines = wrapText(ctx, `"${claimText.slice(0, 160)}"`, boxW - 50);
-    const claimBoxH = Math.max(90, claimLines.length * 28 + 36);
+    const claimBoxH = Math.max(90, Math.min(3, claimLines.length) * 28 + 36);
 
     ctx.fillStyle = "#FEF2F2";
     ctx.strokeStyle = "#FECACA";
@@ -186,7 +187,7 @@ export default function ShareSheet({
     curY += 16;
 
     const offLines = wrapText(ctx, `"${officialText.slice(0, 160)}"`, boxW - 50);
-    const offBoxH = Math.max(90, offLines.length * 28 + 36);
+    const offBoxH = Math.max(90, Math.min(3, offLines.length) * 28 + 36);
 
     ctx.fillStyle = "#F0FDF4";
     ctx.strokeStyle = "#BBF7D0";
@@ -252,20 +253,37 @@ export default function ShareSheet({
     ctx.fillText("Rule Zero: Zero Hallucinated Citations · Verified against Primary Government Records", m + 44, footerTop + 62);
   }, [verdict, claimText, officialText, citation, warning, publicId]);
 
-  // Client-side Instant HD PNG Download
+  // Client-side Instant HD PNG Download with fallback
   const handleDownload = () => {
+    setDownloading(true);
     const canvas = canvasRef.current;
     if (!canvas) {
       window.open(cardUrl, "_blank");
+      setDownloading(false);
       return;
     }
-    const dataUrl = canvas.toDataURL("image/png");
-    const a = document.createElement("a");
-    a.href = dataUrl;
-    a.download = `sarkari-sach-verified-${publicId}.png`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
+
+    try {
+      canvas.toBlob((blob) => {
+        if (!blob) {
+          window.open(cardUrl, "_blank");
+          setDownloading(false);
+          return;
+        }
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `sarkari-sach-verified-${publicId}.png`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        setDownloading(false);
+      }, "image/png");
+    } catch {
+      window.open(cardUrl, "_blank");
+      setDownloading(false);
+    }
   };
 
   // Copy Image directly to Clipboard for WhatsApp Web paste
@@ -288,77 +306,89 @@ export default function ShareSheet({
   };
 
   return (
-    <div className="bg-white rounded-3xl border border-canvas-line shadow-sm p-6 sm:p-7 my-6 space-y-6">
-      {/* Header and Controls */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-4 border-b border-canvas-line">
+    <div className="bg-slate-50/70 hover:bg-slate-50/90 rounded-2xl border border-slate-200/90 shadow-sm p-5 sm:p-6 my-6 transition-all">
+      {/* Exact Match to Verified WhatsApp Reply Banner */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="space-y-1">
-          <div className="flex items-center gap-2">
-            <ShieldCheck className="w-5 h-5 text-brand" />
-            <h4 className="text-base font-extrabold text-ink">
-              {lang === "en" ? "Verified Share Card (Canvas)" : "सत्यापित शेयर कार्ड (कैनवास)"}
-            </h4>
-            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-brand/10 text-brand">
-              <Sparkles className="w-3 h-3" />
-              1080×1080 HD
-            </span>
-          </div>
-          <p className="text-xs text-ink-subtle">
-            {lang === "en"
-              ? "Share this official verification card back to WhatsApp groups to counter misinformation."
-              : "व्हाट्सएप ग्रुप्स में सही सरकारी जानकारी पहुँचाने के लिए यह कार्ड डाउनलोड या शेयर करें।"}
+          <h4 className="text-sm sm:text-base font-bold text-slate-900 tracking-tight">
+            {lang === "hi"
+              ? "सत्यापित जवाब उसी व्हाट्सएप ग्रुप में वापस भेजें"
+              : "Send verified reply back to your WhatsApp group"}
+          </h4>
+          <p className="text-xs sm:text-sm text-slate-500 leading-normal">
+            {lang === "hi"
+              ? "सत्यापित कार्ड डाउनलोड करें या सीधे व्हाट्सएप पर शेयर करें ताकि अफवाह रुक सके।"
+              : "Download the verified card image or share directly on WhatsApp to stop misinformation."}
           </p>
         </div>
 
-        <button
-          onClick={() => setShowPreview(!showPreview)}
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-canvas-line text-xs font-bold text-ink-subtle hover:text-brand hover:bg-slate-50 transition-colors"
-        >
-          {showPreview ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
-          <span>{showPreview ? (lang === "en" ? "Hide Card" : "कार्ड छुपाएं") : (lang === "en" ? "Show Card" : "कार्ड देखें")}</span>
-        </button>
+        {/* Action Buttons: Exact styling from canvas attachment */}
+        <div className="flex items-center gap-2.5 sm:gap-3 shrink-0 flex-wrap">
+          {/* 1. Download Card */}
+          <button
+            onClick={handleDownload}
+            disabled={downloading}
+            className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-white text-slate-800 border border-slate-200 shadow-sm text-xs sm:text-sm font-semibold hover:bg-slate-50 active:scale-95 transition-all"
+          >
+            <Download className="w-4 h-4 text-slate-600" />
+            <span>
+              {downloading
+                ? (lang === "hi" ? "डाउनलोड हो रहा है..." : "Downloading...")
+                : (lang === "hi" ? "कार्ड डाउनलोड करें" : "Download Card")}
+            </span>
+          </button>
+
+          {/* 2. Share on WhatsApp */}
+          <a
+            href={whatsappUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#059669] hover:bg-[#047857] text-white shadow-sm text-xs sm:text-sm font-semibold active:scale-95 transition-all"
+          >
+            <MessageCircle className="w-4 h-4 fill-white/10" />
+            <span>{lang === "hi" ? "व्हाट्सएप पर शेयर करें" : "Share on WhatsApp"}</span>
+          </a>
+
+          {/* 3. Toggle Card Preview */}
+          <button
+            onClick={() => setShowPreview(!showPreview)}
+            title={showPreview ? "Hide Preview" : "Preview 1080x1080 Card"}
+            className="p-2.5 rounded-xl bg-white border border-slate-200 text-slate-600 hover:text-brand hover:bg-slate-50 transition-colors shadow-sm"
+          >
+            {showPreview ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+          </button>
+        </div>
       </div>
 
-      {/* Interactive HTML5 Canvas Preview */}
+      {/* Expandable High-DPI Canvas Preview */}
       {showPreview && (
-        <div className="flex justify-center bg-slate-50/70 p-4 sm:p-6 rounded-2xl border border-dashed border-slate-200">
-          <canvas
-            ref={canvasRef}
-            className="w-full max-w-[420px] h-auto aspect-square rounded-2xl shadow-md border border-slate-200 bg-white"
-          />
+        <div className="mt-5 pt-5 border-t border-slate-200/80 space-y-4">
+          <div className="flex items-center justify-between text-xs">
+            <span className="font-semibold text-slate-700 inline-flex items-center gap-1.5">
+              <ShieldCheck className="w-4 h-4 text-brand" />
+              1080×1080 HD Verified Provenance Card
+            </span>
+            <button
+              onClick={handleCopy}
+              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 font-medium"
+            >
+              {copied ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
+              <span>{copied ? "Copied!" : "Copy Image"}</span>
+            </button>
+          </div>
+          <div className="flex justify-center bg-slate-100/60 p-4 rounded-xl border border-slate-200/80">
+            <canvas
+              ref={canvasRef}
+              className="w-full max-w-[380px] h-auto aspect-square rounded-xl shadow-md border border-slate-200 bg-white"
+            />
+          </div>
         </div>
       )}
 
-      {/* Action Buttons */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
-        {/* 1. Download Card */}
-        <button
-          onClick={handleDownload}
-          className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-brand text-white text-xs font-bold hover:bg-brand-dark active:scale-[0.98] transition-all shadow-sm"
-        >
-          <Download className="w-4 h-4" />
-          <span>{lang === "en" ? "Download Card (PNG)" : "कार्ड डाउनलोड करें (PNG)"}</span>
-        </button>
-
-        {/* 2. Copy Image to Clipboard */}
-        <button
-          onClick={handleCopy}
-          className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-slate-100 text-ink border border-slate-200 text-xs font-bold hover:bg-slate-200 active:scale-[0.98] transition-all shadow-sm"
-        >
-          {copied ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4 text-ink-subtle" />}
-          <span>{copied ? (lang === "en" ? "Copied Image!" : "इमेज कॉपी हो गई!") : (lang === "en" ? "Copy Image" : "इमेज कॉपी करें")}</span>
-        </button>
-
-        {/* 3. Share on WhatsApp */}
-        <a
-          href={whatsappUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-emerald-600 text-white text-xs font-bold hover:bg-emerald-700 active:scale-[0.98] transition-all shadow-sm"
-        >
-          <MessageCircle className="w-4 h-4" />
-          <span>{lang === "en" ? "Share on WhatsApp" : "व्हाट्सएप पर शेयर करें"}</span>
-        </a>
-      </div>
+      {/* Invisible Canvas when collapsed to keep toBlob ready */}
+      {!showPreview && (
+        <canvas ref={canvasRef} className="hidden" width={1080} height={1080} />
+      )}
     </div>
   );
 }

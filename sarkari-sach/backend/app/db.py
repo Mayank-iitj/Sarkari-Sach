@@ -7,11 +7,14 @@ from app.settings import settings
 from app.models import Base, Source, OfficialDomain
 
 # Async engine for FastAPI routes and worker
+db_url = settings.clean_database_url
+sync_db_url = settings.clean_sync_database_url
+
 async_engine = create_async_engine(
-    settings.DATABASE_URL,
+    db_url,
     echo=False,
     future=True,
-    connect_args={"check_same_thread": False} if "sqlite" in settings.DATABASE_URL else {}
+    connect_args={"check_same_thread": False} if "sqlite" in db_url else {}
 )
 
 AsyncSessionLocal = async_sessionmaker(
@@ -24,9 +27,9 @@ AsyncSessionLocal = async_sessionmaker(
 
 # Sync engine for scripts/eval
 sync_engine = create_engine(
-    settings.SYNC_DATABASE_URL,
+    sync_db_url,
     echo=False,
-    connect_args={"check_same_thread": False} if "sqlite" in settings.SYNC_DATABASE_URL else {}
+    connect_args={"check_same_thread": False} if "sqlite" in sync_db_url else {}
 )
 
 SyncSessionLocal = sessionmaker(

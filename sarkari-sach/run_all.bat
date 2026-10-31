@@ -13,3 +13,4 @@ echo - Web App:             http://localhost:3000
 echo - WhatsApp Simulator:  http://localhost:3000/whatsapp
 echo - Backend API Docs:    http://localhost:8000/docs
 echo ==========================================================
+

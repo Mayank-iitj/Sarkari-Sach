@@ -8,8 +8,8 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
-CONFIG_DIR = BASE_DIR / "config"
-DATA_DIR = BASE_DIR / "data"
+CONFIG_DIR = BASE_DIR / "config" if (BASE_DIR / "config").exists() else Path(__file__).resolve().parent.parent / "config"
+DATA_DIR = BASE_DIR / "data" if (BASE_DIR / "data").parent.exists() else Path(__file__).resolve().parent.parent / "data"
 
 
 class Settings(BaseSettings):
@@ -20,8 +20,10 @@ class Settings(BaseSettings):
     )
 
     # LLM
-    LLM_PROVIDER: Literal["anthropic", "ollama", "fake"] = "fake"
+    LLM_PROVIDER: Literal["anthropic", "ollama", "fake", "gemini", "openai"] = "fake"
     ANTHROPIC_API_KEY: str = ""
+    GEMINI_API_KEY: str = ""
+    OPENAI_API_KEY: str = ""
     LLM_MODEL: str = "claude-sonnet-5-5"
     OLLAMA_URL: str = "http://localhost:11434"
 
@@ -38,6 +40,26 @@ class Settings(BaseSettings):
             f"sqlite:///{DATA_DIR / 'sach.db'}"
         )
     )
+
+    @property
+    def clean_database_url(self) -> str:
+        url = self.DATABASE_URL
+        if url.startswith("postgres://"):
+            url = url.replace("postgres://", "postgresql+asyncpg://", 1)
+        elif url.startswith("postgresql://") and "+asyncpg" not in url:
+            url = url.replace("postgresql://", "postgresql+asyncpg://", 1)
+        return url
+
+    @property
+    def clean_sync_database_url(self) -> str:
+        url = self.SYNC_DATABASE_URL or self.DATABASE_URL
+        if url.startswith("postgres://"):
+            url = url.replace("postgres://", "postgresql://", 1)
+        elif "sqlite+aiosqlite:///" in url:
+            url = url.replace("sqlite+aiosqlite:///", "sqlite:///")
+        elif "+asyncpg" in url:
+            url = url.replace("postgresql+asyncpg://", "postgresql://")
+        return url
 
     # Redis
     REDIS_URL: str = "redis://localhost:6379/0"
