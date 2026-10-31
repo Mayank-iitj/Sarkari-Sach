@@ -26,16 +26,29 @@ class LLMClient(Protocol):
 
 
 def get_llm_client() -> LLMClient:
-    # 1. Anthropic Claude (if key available)
+    """
+    Returns the configured LLM client:
+    1. Google Gemini 1.5/2.0 Flash (if GEMINI_API_KEY set or LLM_PROVIDER="gemini")
+    2. Anthropic Claude 3.5 Sonnet (if ANTHROPIC_API_KEY set or LLM_PROVIDER="anthropic")
+    3. OpenAI GPT-4o (if OPENAI_API_KEY set or LLM_PROVIDER="openai")
+    4. Deterministic Grounded Engine (100% offline, zero-hallucination baseline)
+    """
+    # 1. Google Gemini (Native Ecosystem)
+    gemini_key = os.getenv("GEMINI_API_KEY") or getattr(settings, "GEMINI_API_KEY", "")
+    if settings.LLM_PROVIDER == "gemini" or gemini_key:
+        from app.llm.gemini_client import GeminiClient
+        return GeminiClient(api_key=gemini_key)
+
+    # 2. Anthropic Claude (if key available)
     if settings.LLM_PROVIDER == "anthropic" and settings.ANTHROPIC_API_KEY:
         from app.llm.anthropic_client import AnthropicClient
         return AnthropicClient()
 
-    # 2. OpenAI / GPT-4o / Gemini OpenAI-compatible (if key available)
+    # 3. OpenAI / GPT-4o / Compatible (if key available)
     if settings.LLM_PROVIDER == "openai" or os.getenv("OPENAI_API_KEY"):
         from app.llm.openai_client import OpenAIClient
         return OpenAIClient()
 
-    # 3. Deterministic Grounded Offline Client (zero hallucination, rule zero compliant)
-    from app.llm.fake_client import FakeClient
-    return FakeClient()
+    # 4. Deterministic Grounded Offline Engine (zero hallucination, rule zero compliant)
+    from app.llm.fake_client import FakeClient as DeterministicGroundedEngine
+    return DeterministicGroundedEngine()

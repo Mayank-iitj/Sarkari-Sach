@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ShieldCheck, BarChart3, Info, BookOpen, Layers, Globe, Menu, X } from "lucide-react";
+import { ShieldCheck, BarChart3, Info, BookOpen, Layers, Globe, MessageCircle, Menu, X } from "lucide-react";
 import { useState } from "react";
 
 interface NavbarProps {
@@ -16,10 +16,11 @@ export default function Navbar({ lang, setLang }: NavbarProps) {
 
   const navLinks = [
     { href: "/", labelEn: "Verify", labelHi: "जाँचें", icon: ShieldCheck },
-    { href: "/schemes", labelEn: "Schemes & Lineage", labelHi: "सरकारी योजनाएं", icon: Layers },
-    { href: "/sources", labelEn: "Official Registry", labelHi: "आधिकारिक स्रोत", icon: Globe },
-    { href: "/documents", labelEn: "Corpus", labelHi: "राजपत्र संग्रह", icon: BookOpen },
-    { href: "/eval", labelEn: "Accuracy & Eval", labelHi: "सटीकता व बेंचमार्क", icon: BarChart3 },
+    { href: "/whatsapp", labelEn: "WhatsApp Bot", labelHi: "व्हाट्सएप बॉट", icon: MessageCircle },
+    { href: "/schemes", labelEn: "Schemes", labelHi: "योजनाएं", icon: Layers },
+    { href: "/sources", labelEn: "Registry", labelHi: "स्रोत", icon: Globe },
+    { href: "/documents", labelEn: "Corpus", labelHi: "राजपत्र", icon: BookOpen },
+    { href: "/eval", labelEn: "Eval & Benchmarks", labelHi: "सटीकता", icon: BarChart3 },
     { href: "/about", labelEn: "About", labelHi: "नियम शून्य", icon: Info },
   ];
 
