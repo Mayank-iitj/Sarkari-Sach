@@ -14,7 +14,11 @@ def transcribe_audio(audio_bytes: bytes, filename: str = "") -> tuple[str, str]:
         return ("क्या पीएम किसान योजना की सम्मान निधि राशि ₹6,000 से बढ़ाकर ₹12,000 कर दी गई है और क्या आवेदन के लिए ₹250 शुल्क लगेगा?", "hi")
 
     # 1. First Priority: Gemini Audio Transcription (Natively supports WebM, MP3, WAV, OGG, AAC)
-    gemini_key = os.getenv("GEMINI_API_KEY", "")
+    try:
+        from app.settings import settings
+        gemini_key = os.getenv("GEMINI_API_KEY", "") or getattr(settings, "GEMINI_API_KEY", "")
+    except Exception:
+        gemini_key = os.getenv("GEMINI_API_KEY", "")
     if gemini_key:
         try:
             mime = "audio/wav"

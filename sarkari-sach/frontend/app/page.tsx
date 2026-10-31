@@ -434,66 +434,38 @@ export default function ModernObsidianLanding() {
 
               {/* Bottom Actions Row */}
               <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-white/[0.08]">
-                <div className="flex items-center gap-2 flex-wrap">
+                <div className="flex items-center gap-3">
                   {/* Real Voice Dictate Button */}
                   <button
                     type="button"
                     onClick={toggleRecording}
                     disabled={isVoiceTranscribing}
-                    className={`px-3 py-2 rounded-xl text-xs font-editorial-mono flex items-center gap-2 transition-all shadow-sm ${
+                    className={`px-3.5 py-2 rounded-xl text-xs font-editorial-mono flex items-center gap-2 transition-all ${
                       isRecording
-                        ? "bg-red-500/20 text-red-400 border border-red-500/50 animate-pulse shadow-[0_0_15px_rgba(239,68,68,0.2)]"
+                        ? "bg-red-500/20 text-red-400 border border-red-500/50 animate-pulse shadow-[0_0_15px_rgba(239,68,68,0.25)]"
                         : isVoiceTranscribing
                         ? "bg-amber-500/20 text-amber-300 border border-amber-500/40"
-                        : "bg-white/[0.04] text-slate-300 border border-white/[0.08] hover:text-white hover:bg-white/[0.08]"
+                        : "bg-white/[0.04] text-slate-300 border border-white/[0.12] hover:text-white hover:bg-white/[0.08] hover:border-white/20"
                     }`}
-                    title={isRecording ? "Click to stop recording" : "Click to speak in Hindi or English"}
+                    title={isRecording ? "Click to stop recording" : "Dictate claim in Hindi or English"}
                   >
                     {isRecording ? (
-                      <MicOff className="w-3.5 h-3.5 text-red-400 animate-spin" />
+                      <MicOff className="w-3.5 h-3.5 text-red-400" />
                     ) : isVoiceTranscribing ? (
                       <Loader2 className="w-3.5 h-3.5 animate-spin text-amber-300" />
                     ) : (
                       <Mic className="w-3.5 h-3.5 text-slate-300" />
                     )}
-                    <span className="text-[10px] tracking-widest uppercase font-bold">
+                    <span className="text-[11px] tracking-[0.2em] uppercase font-bold">
                       {isRecording
-                        ? "Listening (Speak Now)..."
+                        ? "Listening..."
                         : isVoiceTranscribing
-                        ? "Transcribing Audio..."
+                        ? "Transcribing..."
                         : "Dictate"}
                     </span>
                   </button>
 
-                  {/* Language Toggle for Real Voice Recognition */}
-                  <div className="flex items-center rounded-lg border border-white/[0.08] bg-white/[0.02] p-0.5 text-[9px] font-editorial-mono">
-                    <button
-                      type="button"
-                      onClick={() => setDictateLang("hi-IN")}
-                      className={`px-2 py-1 rounded-md transition-all ${
-                        dictateLang === "hi-IN"
-                          ? "bg-white text-black font-bold"
-                          : "text-slate-400 hover:text-white"
-                      }`}
-                      title="Dictate in Hindi"
-                    >
-                      HI (हिंदी)
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setDictateLang("en-IN")}
-                      className={`px-2 py-1 rounded-md transition-all ${
-                        dictateLang === "en-IN"
-                          ? "bg-white text-black font-bold"
-                          : "text-slate-400 hover:text-white"
-                      }`}
-                      title="Dictate in English"
-                    >
-                      EN
-                    </button>
-                  </div>
-
-                  <span className="text-[10px] font-editorial-mono tracking-widest uppercase text-slate-500 hidden md:inline">
+                  <span className="text-[10px] sm:text-[11px] font-editorial-mono tracking-[0.2em] uppercase text-slate-400/80 select-none">
                     Hindi & English Supported
                   </span>
                 </div>
