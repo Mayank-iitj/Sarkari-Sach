@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import { getApiUrl } from "@/lib/api";
+import { ALL_MYSCHEME_ITEMS } from "@/lib/schemes_data";
 import { ArrowLeft, Clock, FileText, CheckCircle2, AlertTriangle, Layers, ExternalLink, ShieldCheck } from "lucide-react";
 
 interface TimelineItem {
@@ -58,6 +59,10 @@ export default function SchemeLineagePage() {
     loadData();
   }, [schemeId]);
 
+  const fallbackItem = ALL_MYSCHEME_ITEMS.find(
+    (x) => x.id === schemeId || x.id.toLowerCase() === schemeId.toLowerCase()
+  );
+
   return (
     <div className="min-h-screen flex flex-col bg-canvas">
       <Navbar lang={lang} setLang={setLang} />
@@ -74,7 +79,7 @@ export default function SchemeLineagePage() {
           </Link>
 
           <Link
-            href={`/?q=${encodeURIComponent(details?.name || schemeId)}`}
+            href={`/?q=${encodeURIComponent(details?.name || fallbackItem?.nameEn || schemeId)}`}
             className="px-3 py-1.5 rounded-xl bg-brand text-white text-xs font-bold hover:bg-brand-dark transition-colors shadow-sm"
           >
             {lang === "en" ? "Verify Message for this Scheme" : "इस योजना की जाँच करें"}
@@ -86,10 +91,10 @@ export default function SchemeLineagePage() {
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="space-y-1">
               <span className="text-[11px] font-bold uppercase tracking-wider text-brand bg-brand/10 px-2.5 py-1 rounded-full">
-                {details?.issuer || "Government of India"}
+                {details?.issuer || fallbackItem?.issuer || "Government of India"}
               </span>
               <h1 className="text-2xl sm:text-3xl font-extrabold text-ink tracking-tight">
-                {details?.name || schemeId.toUpperCase()}
+                {details?.name || (lang === "hi" ? fallbackItem?.nameHi : fallbackItem?.nameEn) || schemeId.toUpperCase()}
               </h1>
             </div>
 
@@ -103,9 +108,35 @@ export default function SchemeLineagePage() {
 
           <p className="text-xs sm:text-sm text-ink-subtle">
             {lang === "en"
-              ? "Official Gazette lineage trace. Track how policy orders and eligibility definitions evolved from the initial launch notification to the latest gazette revisions."
-              : "आधिकारिक राजपत्र संशोधन इतिहास। जानिए इस योजना के नियम और पात्रता समय के साथ कैसे बदले।"}
+              ? "Official Gazette lineage & myScheme registry trace. Track how policy orders, eligibility definitions, and statutory entitlements evolved over time."
+              : "आधिकारिक राजपत्र संशोधन व myScheme इतिहास। जानिए इस योजना के नियम और पात्रता समय के साथ कैसे बदले।"}
           </p>
+
+          {/* Key Provisions Quick Summary */}
+          {fallbackItem && (
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-3 border-t border-canvas-line text-xs">
+              <div className="bg-slate-50 p-3 rounded-2xl border border-slate-100 space-y-1">
+                <span className="text-[10px] font-bold uppercase text-ink-subtle tracking-wider block">Authorized Benefit</span>
+                <span className="text-ink font-semibold">{fallbackItem.benefit}</span>
+              </div>
+              <div className="bg-slate-50 p-3 rounded-2xl border border-slate-100 space-y-1">
+                <span className="text-[10px] font-bold uppercase text-ink-subtle tracking-wider block">Eligibility</span>
+                <span className="text-ink font-semibold">{fallbackItem.eligibility}</span>
+              </div>
+              <div className="bg-slate-50 p-3 rounded-2xl border border-slate-100 space-y-1">
+                <span className="text-[10px] font-bold uppercase text-ink-subtle tracking-wider block">Official Portal</span>
+                <a
+                  href={fallbackItem.portalUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-brand font-bold hover:underline inline-flex items-center gap-1"
+                >
+                  <span>{fallbackItem.portal}</span>
+                  <ExternalLink className="w-3 h-3" />
+                </a>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Chronological Gazette Lineage Stepper */}

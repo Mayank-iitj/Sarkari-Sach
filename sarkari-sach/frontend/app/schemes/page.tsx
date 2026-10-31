@@ -4,7 +4,18 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import { getApiUrl } from "@/lib/api";
-import { Search, Layers, ExternalLink, ArrowRight, ShieldCheck, Sparkles, AlertCircle, RefreshCw } from "lucide-react";
+import { ALL_MYSCHEME_ITEMS } from "@/lib/schemes_data";
+import {
+  Search,
+  Layers,
+  ExternalLink,
+  ArrowRight,
+  ShieldCheck,
+  Sparkles,
+  RefreshCw,
+  Tag,
+  CheckCircle2,
+} from "lucide-react";
 
 interface Scheme {
   id: string;
@@ -22,62 +33,28 @@ interface LiveSearchResult {
   is_official: boolean;
 }
 
-const POPULAR_SCHEMES = [
-  {
-    id: "pm-kisan",
-    nameEn: "Pradhan Mantri Kisan Samman Nidhi (PM-KISAN)",
-    nameHi: "प्रधानमंत्री किसान सम्मान निधि",
-    issuer: "Ministry of Agriculture & Farmers Welfare",
-    benefit: "₹6,000 / year (3 installments of ₹2,000)",
-    fee: "Zero / Free (निःशुल्क)",
-    eligibility: "All landholding farmer families across India",
-    portal: "pmkisan.gov.in",
-    portalUrl: "https://pmkisan.gov.in",
-  },
-  {
-    id: "ayushman-bharat",
-    nameEn: "Ayushman Bharat PM-JAY",
-    nameHi: "आयुष्मान भारत - प्रधानमंत्री जन आरोग्य योजना",
-    issuer: "National Health Authority (NHA) / MoHFW",
-    benefit: "₹5,00,000 per family per year for secondary/tertiary care",
-    fee: "Zero / Free (निःशुल्क)",
-    eligibility: "Bottom 40% vulnerable families (SECC 2011)",
-    portal: "nha.gov.in / beneficiary.nha.gov.in",
-    portalUrl: "https://nha.gov.in",
-  },
-  {
-    id: "sukanya-samriddhi",
-    nameEn: "Sukanya Samriddhi Yojana (SSA)",
-    nameHi: "सुकन्या समृद्धि योजना",
-    issuer: "Ministry of Finance / India Post",
-    benefit: "High government-backed interest for girl child savings",
-    fee: "Minimum deposit ₹250 / year",
-    eligibility: "Girl children below 10 years of age",
-    portal: "india.gov.in",
-    portalUrl: "https://www.india.gov.in",
-  },
-  {
-    id: "pm-vishwakarma",
-    nameEn: "PM Vishwakarma Scheme",
-    nameHi: "प्रधानमंत्री विश्वकर्मा योजना",
-    issuer: "Ministry of MSME",
-    benefit: "Collateral-free enterprise credit up to ₹3,00,000 at 5% interest + ₹15,000 toolkit",
-    fee: "Free application at CSCs",
-    eligibility: "Traditional artisans & craftspeople across 18 trades",
-    portal: "pmvishwakarma.gov.in",
-    portalUrl: "https://pmvishwakarma.gov.in",
-  },
+const CATEGORIES = [
+  "All",
+  "Agriculture",
+  "Health",
+  "Energy",
+  "Housing",
+  "Finance",
+  "Skills",
+  "Social",
+  "Education",
 ];
 
 export default function SchemesDirectoryPage() {
   const [lang, setLang] = useState<"hi" | "en">("en");
   const [query, setQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("All");
   const [schemes, setSchemes] = useState<Scheme[]>([]);
   const [loading, setLoading] = useState(false);
   const [liveSearching, setLiveSearching] = useState(false);
   const [liveResults, setLiveResults] = useState<LiveSearchResult[]>([]);
 
-  // Fetch local schemes list
+  // Fetch local schemes list from API
   useEffect(() => {
     async function loadSchemes() {
       try {
@@ -114,34 +91,43 @@ export default function SchemesDirectoryPage() {
     }
   };
 
-  const filteredLocal = POPULAR_SCHEMES.filter(
-    (s) =>
+  const filteredSchemes = ALL_MYSCHEME_ITEMS.filter((s) => {
+    const matchesCategory = selectedCategory === "All" || s.category === selectedCategory;
+    const matchesQuery =
       !query ||
       s.nameEn.toLowerCase().includes(query.toLowerCase()) ||
       s.nameHi.includes(query) ||
-      s.benefit.toLowerCase().includes(query.toLowerCase())
-  );
+      s.benefit.toLowerCase().includes(query.toLowerCase()) ||
+      s.issuer.toLowerCase().includes(query.toLowerCase());
+    return matchesCategory && matchesQuery;
+  });
 
   return (
     <div className="min-h-screen flex flex-col bg-canvas">
       <Navbar lang={lang} setLang={setLang} />
 
-      <main className="flex-1 max-w-5xl mx-auto w-full px-4 py-8 space-y-8">
+      <main className="flex-1 max-w-6xl mx-auto w-full px-4 py-8 space-y-8">
         {/* Hero Section */}
-        <div className="text-center space-y-3 max-w-2xl mx-auto">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand/10 text-brand text-xs font-bold">
+        <div className="text-center space-y-3 max-w-3xl mx-auto">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-brand/10 text-brand text-xs font-bold">
             <Layers className="w-3.5 h-3.5" />
-            <span>{lang === "en" ? "Official Schemes & Lineage Registry" : "आधिकारिक योजना व संशोधन रजिस्ट्री"}</span>
+            <span>
+              {lang === "en"
+                ? "National myScheme Repository & Lineage Registry"
+                : "राष्ट्रीय myScheme डायरेक्टरी व संशोधन रजिस्ट्री"}
+            </span>
           </div>
 
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-ink tracking-tight">
-            {lang === "en" ? "Explore Authorized Government Schemes" : "अधिकृत सरकारी योजनाओं की सत्यता जांचें"}
+          <h1 className="text-2xl sm:text-4xl font-extrabold text-ink tracking-tight">
+            {lang === "en"
+              ? "Official Government Schemes (myScheme.gov.in)"
+              : "अधिकृत सरकारी योजनाओं की सत्यता जांचें"}
           </h1>
 
-          <p className="text-xs sm:text-sm text-ink-subtle">
+          <p className="text-xs sm:text-sm text-ink-subtle leading-relaxed">
             {lang === "en"
-              ? "Every scheme listed here is verified against gazette notifications, ministry circulars, and live official .gov.in portals. Track historical amendments, authentic amounts, and zero-fee guarantees."
-              : "यहाँ दी गई सभी योजनाएं भारत के आधिकारिक राजपत्र, मंत्रालयों के परिपत्रों और .gov.in पोर्टल्स से सत्यापित हैं।"}
+              ? "Explore 20+ flagship Central Government schemes ingested directly from myscheme.gov.in, Gazette notifications, and ministry registries. Compare authorized benefits, statutory zero-fee guarantees, and official portals to protect against viral misinformation."
+              : "myScheme.gov.in और भारत के राजपत्र से सत्यापित 20+ प्रमुख केंद्रीय योजनाएं। फर्जी दावों से बचने के लिए वास्तविक लाभ, पात्रता और आधिकारिक पोर्टल्स देखें।"}
           </p>
         </div>
 
@@ -155,8 +141,8 @@ export default function SchemesDirectoryPage() {
               onChange={(e) => setQuery(e.target.value)}
               placeholder={
                 lang === "en"
-                  ? "Search schemes (e.g., PM Kisan, Ayushman Bharat, Vishwakarma)..."
-                  : "योजना खोजें (जैसे पीएम किसान, आयुष्मान भारत, सुकन्या)..."
+                  ? "Search schemes (e.g. PM Kisan, Surya Ghar, Ayushman, Mudra)..."
+                  : "योजना खोजें (जैसे पीएम किसान, सूर्य घर, आयुष्मान, मुद्रा)..."
               }
               className="w-full pl-11 pr-4 py-3 bg-white rounded-2xl border border-canvas-line text-sm text-ink placeholder:text-ink-subtle focus:outline-none focus:ring-2 focus:ring-brand shadow-sm"
             />
@@ -172,7 +158,24 @@ export default function SchemesDirectoryPage() {
           </button>
         </form>
 
-        {/* Live Search Results (If Searched) */}
+        {/* Category Filter Pills */}
+        <div className="flex items-center justify-center gap-1.5 flex-wrap pt-1">
+          {CATEGORIES.map((cat) => (
+            <button
+              key={cat}
+              onClick={() => setSelectedCategory(cat)}
+              className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+                selectedCategory === cat
+                  ? "bg-brand text-white shadow-sm"
+                  : "bg-white text-ink-subtle border border-canvas-line hover:text-ink hover:bg-slate-50"
+              }`}
+            >
+              {cat}
+            </button>
+          ))}
+        </div>
+
+        {/* Live Official Search Results (If Searched) */}
         {liveResults.length > 0 && (
           <div className="bg-white rounded-3xl border border-blue-200 p-6 space-y-4 shadow-sm">
             <div className="flex items-center justify-between pb-3 border-b border-canvas-line">
@@ -198,32 +201,22 @@ export default function SchemesDirectoryPage() {
                   </div>
                   <p className="text-xs text-ink-subtle line-clamp-2">{r.snippet}</p>
 
-                  {r.provisions.length > 0 && (
-                    <div className="pt-2 border-t border-slate-200 flex flex-wrap gap-1.5">
-                      {r.provisions.map((p, pidx) => (
-                        <span key={pidx} className="text-[11px] font-semibold bg-emerald-100 text-emerald-900 px-2 py-0.5 rounded">
-                          {p.field.toUpperCase()}: {p.value}
-                        </span>
-                      ))}
-                    </div>
-                  )}
-
-                  <div className="pt-1 flex items-center justify-between">
+                  <div className="pt-2 flex items-center justify-between border-t border-slate-200 text-xs">
                     <a
                       href={r.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1 text-xs font-bold text-brand hover:underline"
+                      className="font-bold text-brand hover:underline inline-flex items-center gap-1"
                     >
-                      <span>Visit Portal</span>
+                      <span>Visit Official Portal</span>
                       <ExternalLink className="w-3 h-3" />
                     </a>
 
                     <Link
                       href={`/?q=${encodeURIComponent(r.title)}`}
-                      className="text-xs font-bold text-slate-700 hover:text-brand"
+                      className="px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-xs font-bold text-ink hover:bg-slate-100 transition-colors shadow-sm"
                     >
-                      Verify Message →
+                      Verify Message
                     </Link>
                   </div>
                 </div>
@@ -232,111 +225,92 @@ export default function SchemesDirectoryPage() {
           </div>
         )}
 
-        {/* Popular Central Schemes Grid */}
+        {/* Curated Official Schemes Grid */}
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-bold text-ink">
-              {lang === "en" ? "Official Central Government Schemes" : "प्रमुख केंद्रीय योजनाएं"}
+            <h2 className="text-lg font-extrabold text-ink flex items-center gap-2">
+              <CheckCircle2 className="w-5 h-5 text-emerald-600" />
+              <span>
+                {lang === "en" ? "Authorized Schemes Directory" : "अधिकृत सरकारी योजनाओं की सूची"}
+              </span>
+              <span className="text-xs font-bold bg-slate-100 text-ink-subtle px-2 py-0.5 rounded-full">
+                {filteredSchemes.length}
+              </span>
             </h2>
             <span className="text-xs text-ink-subtle">
-              {filteredLocal.length} {lang === "en" ? "Schemes Listed" : "योजनाएं"}
+              Source: <strong className="text-ink">myscheme.gov.in</strong>
             </span>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            {filteredLocal.map((scheme) => (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            {filteredSchemes.map((scheme) => (
               <div
                 key={scheme.id}
-                className="bg-white rounded-2xl border border-canvas-line p-5 shadow-sm space-y-4 hover:border-brand/40 transition-all flex flex-col justify-between"
+                className="bg-white rounded-3xl border border-canvas-line p-5 flex flex-col justify-between hover:shadow-md hover:border-brand/40 transition-all space-y-4"
               >
                 <div className="space-y-2">
-                  <div className="flex items-start justify-between gap-2">
-                    <div>
-                      <h3 className="font-extrabold text-base text-ink leading-tight">
-                        {lang === "en" ? scheme.nameEn : scheme.nameHi}
-                      </h3>
-                      <p className="text-xs text-ink-subtle mt-0.5">{scheme.issuer}</p>
-                    </div>
-                    <span className="px-2 py-1 rounded-md text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 flex-shrink-0">
-                      Verified Active
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-brand bg-brand/10 px-2 py-0.5 rounded-full">
+                      {scheme.category}
+                    </span>
+                    <span className="text-[10px] font-mono font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                      {scheme.fee.includes("Zero") || scheme.fee.includes("Free") ? "Free / निःशुल्क" : "Nominal"}
                     </span>
                   </div>
 
-                  <div className="space-y-1.5 pt-2 text-xs">
-                    <div className="flex items-baseline gap-2">
-                      <span className="text-ink-subtle font-medium min-w-[70px]">
-                        {lang === "en" ? "Benefit:" : "लाभ:"}
-                      </span>
-                      <span className="font-bold text-ink">{scheme.benefit}</span>
-                    </div>
+                  <h3 className="text-base font-extrabold text-ink leading-snug">
+                    {lang === "hi" ? scheme.nameHi : scheme.nameEn}
+                  </h3>
 
-                    <div className="flex items-baseline gap-2">
-                      <span className="text-ink-subtle font-medium min-w-[70px]">
-                        {lang === "en" ? "Fee:" : "शुल्क:"}
-                      </span>
-                      <span className="font-bold text-emerald-700">{scheme.fee}</span>
-                    </div>
+                  <p className="text-[11px] text-ink-subtle line-clamp-1">
+                    {scheme.issuer}
+                  </p>
+                </div>
 
-                    <div className="flex items-baseline gap-2">
-                      <span className="text-ink-subtle font-medium min-w-[70px]">
-                        {lang === "en" ? "Eligibility:" : "पात्रता:"}
-                      </span>
-                      <span className="text-ink">{scheme.eligibility}</span>
-                    </div>
+                <div className="space-y-2 text-xs bg-slate-50 p-3 rounded-2xl border border-slate-100">
+                  <div>
+                    <span className="font-bold text-ink block text-[11px] uppercase tracking-wider">
+                      {lang === "en" ? "Official Benefit:" : "सरकारी लाभ:"}
+                    </span>
+                    <span className="text-ink-subtle text-xs line-clamp-2">
+                      {scheme.benefit}
+                    </span>
+                  </div>
 
-                    <div className="flex items-baseline gap-2">
-                      <span className="text-ink-subtle font-medium min-w-[70px]">
-                        {lang === "en" ? "Portal:" : "वेबसाइट:"}
-                      </span>
-                      <a
-                        href={scheme.portalUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-brand font-mono hover:underline inline-flex items-center gap-1"
-                      >
-                        <span>{scheme.portal}</span>
-                        <ExternalLink className="w-3 h-3" />
-                      </a>
-                    </div>
+                  <div className="pt-1.5 border-t border-slate-200/60">
+                    <span className="font-bold text-ink block text-[11px] uppercase tracking-wider">
+                      {lang === "en" ? "Eligibility:" : "पात्रता:"}
+                    </span>
+                    <span className="text-ink-subtle text-xs line-clamp-2">
+                      {scheme.eligibility}
+                    </span>
                   </div>
                 </div>
 
-                <div className="pt-3 border-t border-canvas-line flex items-center justify-between gap-3">
+                <div className="flex items-center justify-between pt-2 border-t border-canvas-line text-xs">
                   <Link
                     href={`/schemes/${scheme.id}`}
-                    className="inline-flex items-center gap-1.5 text-xs font-bold text-brand hover:underline"
+                    className="font-bold text-brand hover:underline inline-flex items-center gap-1"
                   >
-                    <span>{lang === "en" ? "View Lineage & Gazette →" : "संशोधन इतिहास व राजपत्र →"}</span>
+                    <span>{lang === "en" ? "View Lineage" : "संशोधन देखें"}</span>
+                    <ArrowRight className="w-3 h-3" />
                   </Link>
 
-                  <Link
-                    href={`/?q=${encodeURIComponent(scheme.nameEn)}`}
-                    className="px-3 py-1.5 rounded-xl bg-slate-100 text-ink text-xs font-bold hover:bg-slate-200 transition-colors"
+                  <a
+                    href={scheme.mySchemeUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs text-ink-subtle hover:text-ink inline-flex items-center gap-1"
                   >
-                    {lang === "en" ? "Verify Claim" : "दावा जांचें"}
-                  </Link>
+                    <span>myScheme</span>
+                    <ExternalLink className="w-3 h-3" />
+                  </a>
                 </div>
               </div>
             ))}
-          </div>
-        </div>
-
-        {/* Rule Zero Explainer Banner */}
-        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-2xl p-5 sm:p-6 flex flex-col sm:flex-row items-center gap-4">
-          <ShieldCheck className="w-10 h-10 text-brand flex-shrink-0" />
-          <div className="space-y-1 text-center sm:text-left">
-            <h4 className="text-sm font-bold text-ink">
-              {lang === "en" ? "The Rule Zero Guarantee" : "नियम शून्य की गारंटी"}
-            </h4>
-            <p className="text-xs text-ink-subtle leading-relaxed">
-              {lang === "en"
-                ? "No scheme benefit is ever confirmed without an exact Gazette Notification or PIB Fact Check record. If any viral message demands registration fees or directs to a non-.gov.in domain, it is immediately flagged as a forgery."
-                : "बिना आधिकारिक सरकारी राजपत्र या पीआईबी तथ्य के किसी दावे की पुष्टि नहीं होती। यदि कोई मैसेज पंजीकरण शुल्क मांगता है, तो वह पूरी तरह फर्जी है।"}
-            </p>
           </div>
         </div>
       </main>
     </div>
   );
 }
-
