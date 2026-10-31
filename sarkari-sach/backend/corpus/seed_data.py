@@ -12,3 +12,4 @@ from corpus.seed_data import seed_corpus_sync, MYSCHEME_REGISTRY
 
 if __name__ == "__main__":
     seed_corpus_sync()
+

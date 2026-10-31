@@ -274,3 +274,4 @@ export const ALL_MYSCHEME_ITEMS: SchemeDefinition[] = [
     mySchemeUrl: "https://www.myscheme.gov.in/schemes/digilocker",
   },
 ];
+
