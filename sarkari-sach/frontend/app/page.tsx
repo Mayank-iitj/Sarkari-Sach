@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import CircularText from "@/components/CircularText";
 import { getApiUrl } from "@/lib/api";
 import {
   ShieldCheck,
@@ -395,6 +396,54 @@ export default function ModernObsidianLanding() {
               <div className="p-3.5 rounded-xl bg-white/[0.02] border border-white/[0.06]">
                 [ RULE ZERO // 0.0% FALSE FORGED ]
               </div>
+            </div>
+
+            {/* Interactive Live Backend Cluster Seal from React Bits */}
+            <div className="pt-8 sm:pt-12 flex flex-col items-center justify-center">
+              <a
+                href="https://sarkari-sach.onrender.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                title="Click to spin up / view Render deployed backend cluster"
+                className="group relative flex flex-col items-center cursor-pointer transition-transform duration-300 hover:scale-105"
+                onMouseEnter={() => {
+                  try {
+                    fetch("https://sarkari-sach.onrender.com/v1/health", { mode: "no-cors" });
+                  } catch {}
+                }}
+              >
+                <CircularText
+                  text="SPIN•UP•BACKEND•RENDER•CLUSTER•LIVE•API•"
+                  onHover="speedUp"
+                  direction="clockwise"
+                  spinDuration={18}
+                  size={190}
+                  fontSize={11}
+                  fontWeight={800}
+                  letterSpacing={0.12}
+                  color="#94A3B8"
+                  draggable
+                  hoverTilt={18}
+                  ring
+                  ringColor="rgba(255, 255, 255, 0.12)"
+                  className="font-editorial-mono select-none"
+                >
+                  <div className="w-16 h-16 rounded-full bg-white/[0.04] border border-white/10 group-hover:border-emerald-500/40 group-hover:bg-emerald-500/10 flex flex-col items-center justify-center gap-1 transition-all shadow-inner backdrop-blur-md">
+                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+                    <span className="text-[9px] font-editorial-mono font-bold tracking-widest text-white uppercase group-hover:text-emerald-400">
+                      LIVE
+                    </span>
+                    <span className="text-[7px] font-editorial-mono text-slate-400 tracking-tighter">
+                      RENDER ↗
+                    </span>
+                  </div>
+                </CircularText>
+
+                <div className="mt-3 inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.03] border border-white/[0.08] text-[10px] font-editorial-mono text-slate-400 group-hover:text-emerald-300 group-hover:border-emerald-500/30 transition-colors">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                  <span>Click to Spin Up Live Render Backend</span>
+                </div>
+              </a>
             </div>
           </div>
         </section>
