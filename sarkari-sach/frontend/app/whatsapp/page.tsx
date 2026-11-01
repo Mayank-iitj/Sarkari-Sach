@@ -143,7 +143,7 @@ export default function WhatsAppSimulatorPage() {
       const res = await fetch(getApiUrl("/v1/whatsapp/simulate"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: text, reply_lang: "hi" }),
+        body: JSON.stringify({ message: text, reply_lang: lang || "hi" }),
       });
 
       if (res.ok) {
@@ -154,10 +154,10 @@ export default function WhatsAppSimulatorPage() {
           sender: "bot",
           text: data.bot_reply_text,
           time: botTime,
-          cardUrl: getApiUrl(data.card_url),
-          audioUrl: getApiUrl(data.audio_url),
-          verdict: data.verdict,
-          publicId: data.public_id,
+          cardUrl: data.card_url ? getApiUrl(data.card_url) : undefined,
+          audioUrl: data.audio_url ? getApiUrl(data.audio_url) : undefined,
+          verdict: data.verdict || undefined,
+          publicId: data.public_id || undefined,
         };
         setMessages((prev) => [...prev, botMsg]);
       }
