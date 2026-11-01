@@ -3,8 +3,19 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import CircularText from "@/components/CircularText";
+import dynamic from "next/dynamic";
 import { getApiUrl } from "@/lib/api";
+
+const CircularText = dynamic(() => import("@/components/CircularText"), {
+  ssr: false,
+  loading: () => (
+    <div className="w-[190px] h-[190px] rounded-full border border-white/10 flex items-center justify-center">
+      <div className="w-16 h-16 rounded-full bg-white/[0.04] border border-white/10 flex flex-col items-center justify-center">
+        <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+      </div>
+    </div>
+  ),
+});
 import {
   ShieldCheck,
   Search,
