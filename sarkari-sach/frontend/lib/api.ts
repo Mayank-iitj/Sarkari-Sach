@@ -12,6 +12,7 @@ const getBaseUrl = (): string => {
     if (host !== "localhost" && host !== "127.0.0.1" && host !== "0.0.0.0") {
       return "https://sarkari-sach.onrender.com";
     }
+    return `http://${host}:8000`;
   }
   if (process.env.NODE_ENV === "production") {
     return "https://sarkari-sach.onrender.com";

@@ -70,13 +70,46 @@ def check_to_response(check: Check) -> CheckDetailResponse:
         for sig in check.signals
     ]
 
-    # Map claims
+    # Map claims safely
     claims_res = []
     for c in (check.claims or []):
-        claims_res.append(Claim(**c))
+        if isinstance(c, dict):
+            c_copy = dict(c)
+            if not c_copy.get("claim_text"):
+                c_copy["claim_text"] = (
+                    c_copy.get("verbatim_quote")
+                    or c_copy.get("details")
+                    or c_copy.get("claim")
+                    or c_copy.get("text")
+                    or c_copy.get("scheme_name")
+                    or "Government Scheme Provision"
+                )
+            try:
+                claims_res.append(Claim(**c_copy))
+            except Exception:
+                claims_res.append(Claim(claim_text=str(c_copy.get("claim_text", ""))))
+        elif isinstance(c, str):
+            claims_res.append(Claim(claim_text=c))
 
-    diffs_res = [DiffItem(**d) for d in (check.diffs or [])]
-    reasons_res = [ReasonItem(**r) if isinstance(r, dict) and "code" in r else ReasonItem(code=str(r)) for r in (check.reasons or [])]
+    diffs_res = []
+    for d in (check.diffs or []):
+        if isinstance(d, dict):
+            try:
+                diffs_res.append(DiffItem(**d))
+            except Exception:
+                pass
+        elif isinstance(d, str):
+            diffs_res.append(DiffItem(field="general", claim=d, official="", quote=""))
+
+    reasons_res = []
+    for r in (check.reasons or []):
+        if isinstance(r, dict) and "code" in r:
+            try:
+                reasons_res.append(ReasonItem(**r))
+            except Exception:
+                reasons_res.append(ReasonItem(code=str(r.get("code", "UNKNOWN")), message=str(r.get("message", ""))))
+        else:
+            reasons_res.append(ReasonItem(code=str(r)))
 
     lineage_data = check.lineage or {}
     lineage_res = LineageInfo(**lineage_data) if lineage_data else LineageInfo()

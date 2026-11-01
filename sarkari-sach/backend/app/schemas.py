@@ -43,17 +43,25 @@ class FieldValue(BaseModel):
 
 
 class Claim(BaseModel):
-    claim_text: str
+    model_config = {"extra": "allow"}
+
+    claim_text: str = ""
     scheme_name: str | None = None
     scheme_name_en: str | None = None
     issuer_claimed: str | None = None
-    fields: dict[str, FieldValue] = Field(default_factory=dict)
+    fields: dict[str, Any] = Field(default_factory=dict)
     links: list[str] = Field(default_factory=list)
     phone_numbers: list[str] = Field(default_factory=list)
     doc_identifiers: list[str] = Field(default_factory=list)
+    claim_type: str | None = None
+    amount_inr: str | None = None
+    details: str | None = None
+    verbatim_quote: str | None = None
 
 
 class Evidence(BaseModel):
+    model_config = {"extra": "allow"}
+
     document: dict[str, Any]
     chunk: dict[str, Any]
     field: str
@@ -65,16 +73,20 @@ class Evidence(BaseModel):
 
 
 class DiffItem(BaseModel):
-    field: str
-    claim: str
-    official: str
-    quote: str
+    model_config = {"extra": "allow"}
+
+    field: str = ""
+    claim: str = ""
+    official: str = ""
+    quote: str = ""
     document_id: str | UUID | None = None
     clause_ref: str | None = None
 
 
 class ReasonItem(BaseModel):
-    code: str
+    model_config = {"extra": "allow"}
+
+    code: str = ""
     field: str | None = None
     claim: str | None = None
     official: str | None = None
