@@ -148,9 +148,9 @@ export default function ResultPage() {
             {explanation.short || (lang === "en" ? "Verification complete." : "जाँच परिणाम तैयार है।")}
           </h2>
 
-          {/* Voice note player */}
+          {/* Voice note player using the exact same authentic voice as WhatsApp */}
           <AudioPlayer
-            audioUrl={explanation.audio_url}
+            audioUrl={explanation.audio_url || (data.id ? `/v1/checks/${data.id}/audio` : `/v1/checks/${id}/audio`)}
             ttsText={explanation.tts_text || explanation.short}
             lang={explanation.lang || lang}
           />
