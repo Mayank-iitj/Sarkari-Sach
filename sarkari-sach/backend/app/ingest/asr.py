@@ -33,37 +33,44 @@ def transcribe_audio(audio_bytes: bytes, filename: str = "") -> tuple[str, str]:
                 mime = "audio/mp4"
 
             b64_data = base64.b64encode(audio_bytes).decode("utf-8")
-            model_name = os.getenv("GEMINI_MODEL", "gemini-3.1-flash-lite")
-            url = f"https://generativelanguage.googleapis.com/v1beta/models/{model_name}:generateContent?key={gemini_key}"
-            payload = {
-                "contents": [
-                    {
-                        "parts": [
-                            {
-                                "inline_data": {
-                                    "mime_type": mime,
-                                    "data": b64_data
+            models_to_try = [
+                os.getenv("GEMINI_MODEL", "gemini-3-flash-preview"),
+                "gemini-3-flash-preview",
+                "gemini-3.5-flash",
+                "gemini-3.6-flash",
+                "gemini-3.1-flash-lite",
+            ]
+            for model_name in models_to_try:
+                url = f"https://generativelanguage.googleapis.com/v1beta/models/{model_name}:generateContent?key={gemini_key}"
+                payload = {
+                    "contents": [
+                        {
+                            "parts": [
+                                {
+                                    "inline_data": {
+                                        "mime_type": mime,
+                                        "data": b64_data
+                                    }
+                                },
+                                {
+                                    "text": "Transcribe this spoken audio message verbatim into its original spoken language (Hindi, Indian English, or mixed Hinglish). Return ONLY the raw transcription without quotation marks, markdown, or commentary."
                                 }
-                            },
-                            {
-                                "text": "Transcribe this spoken audio message verbatim into its original spoken language (Hindi, Indian English, or mixed Hinglish). Return ONLY the raw transcription without quotation marks, markdown, or commentary."
-                            }
-                        ]
-                    }
-                ]
-            }
-            with httpx.Client(timeout=15.0) as client:
-                resp = client.post(url, json=payload)
-                if resp.status_code == 200:
-                    data = resp.json()
-                    candidates = data.get("candidates", [])
-                    if candidates:
-                        parts = candidates[0].get("content", {}).get("parts", [])
-                        if parts:
-                            text = parts[0].get("text", "").strip()
-                            if text:
-                                is_hindi = any('\u0900' <= char <= '\u097F' for char in text)
-                                return (text, "hi" if is_hindi else "en")
+                            ]
+                        }
+                    ]
+                }
+                with httpx.Client(timeout=15.0) as client:
+                    resp = client.post(url, json=payload)
+                    if resp.status_code == 200:
+                        data = resp.json()
+                        candidates = data.get("candidates", [])
+                        if candidates:
+                            parts = candidates[0].get("content", {}).get("parts", [])
+                            if parts:
+                                text = parts[0].get("text", "").strip()
+                                if text:
+                                    is_hindi = any('\u0900' <= char <= '\u097F' for char in text)
+                                    return (text, "hi" if is_hindi else "en")
         except Exception:
             pass
 

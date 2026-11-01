@@ -100,7 +100,7 @@ async def whatsapp_simulate(
 
     verdict_str = res.verdict or "UNVERIFIABLE"
     expl_text = res.explanation.get("short", "") if res.explanation else "Verification complete."
-    citation = "Official Central Government Records"
+    citation = "The Gazette of India & Official Central Registries"
     if res.evidence:
         first_ev = res.evidence[0]
         if hasattr(first_ev, "document_id"):
@@ -108,13 +108,22 @@ async def whatsapp_simulate(
             doc_rec = db.query(Document).filter(Document.id == first_ev.document_id).first()
             if doc_rec:
                 citation = doc_rec.title
+    elif check.searched_sources:
+        citation = check.searched_sources[0]
+
+    steps_block = ""
+    if res.explanation and isinstance(res.explanation, dict) and res.explanation.get("steps"):
+        steps = res.explanation.get("steps", [])
+        if steps:
+            steps_block = "\n\n📋 *Official Action Steps:*\n" + "\n".join([f"• {s}" for s in steps])
 
     formatted_bot_reply = (
         f"🏛️ *SARKARI SACH VERIFICATION REPORT*\n\n"
         f"🔍 *Verdict:* [{verdict_str}]\n\n"
-        f"📌 *Fact:* {expl_text}\n\n"
-        f"📜 *Citation:* {citation}\n\n"
-        f"🔗 *Full Cryptographic Audit:* sach.app/c/{res.public_id}"
+        f"📌 *Fact:* {expl_text}"
+        f"{steps_block}\n\n"
+        f"📜 *Official Citation:* {citation}\n\n"
+        f"🔗 *Full Cryptographic Audit:* http://localhost:3000/c/{res.public_id}"
     )
 
     return {

@@ -20,11 +20,11 @@ class Settings(BaseSettings):
     )
 
     # LLM
-    LLM_PROVIDER: Literal["anthropic", "ollama", "fake", "gemini", "openai"] = "fake"
+    LLM_PROVIDER: Literal["anthropic", "ollama", "fake", "gemini", "openai"] = "gemini"
     ANTHROPIC_API_KEY: str = ""
     GEMINI_API_KEY: str = ""
     OPENAI_API_KEY: str = ""
-    LLM_MODEL: str = "claude-sonnet-5-5"
+    LLM_MODEL: str = "gemini-3-flash-preview"
     OLLAMA_URL: str = "http://localhost:11434"
 
     # Database
