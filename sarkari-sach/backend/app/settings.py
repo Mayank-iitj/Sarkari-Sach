@@ -24,7 +24,7 @@ class Settings(BaseSettings):
     ANTHROPIC_API_KEY: str = ""
     GEMINI_API_KEY: str = ""
     OPENAI_API_KEY: str = ""
-    LLM_MODEL: str = "gemini-3-flash-preview"
+    LLM_MODEL: str = "gemini-3.5-flash-lite"
     OLLAMA_URL: str = "http://localhost:11434"
 
     # Database
