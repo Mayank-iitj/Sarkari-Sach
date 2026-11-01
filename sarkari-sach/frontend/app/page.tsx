@@ -27,6 +27,7 @@ import {
   HeartPulse,
   Sun,
   Fingerprint,
+  MessageCircle,
 } from "lucide-react";
 
 const CircularText = dynamic(() => import("@/components/CircularText"), {
@@ -455,9 +456,14 @@ export default function ModernObsidianLanding() {
           </div>
         </Link>
 
-        {/* Right: Border-separated links & Solid White Verify CTA */}
+        {/* Right: Border-separated links & WhatsApp Tile & Solid White Verify CTA */}
         <nav className="hidden md:flex items-center gap-2">
           <div className="flex items-center rounded-xl bg-white/[0.03] border border-white/[0.08] p-1 font-editorial-mono text-[11px] tracking-[0.2em] uppercase text-slate-400">
+            <Link href="/whatsapp" className="px-3.5 py-1.5 rounded-lg text-emerald-400 hover:text-emerald-300 hover:bg-emerald-500/10 flex items-center gap-1.5 transition-colors font-bold">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              WhatsApp
+            </Link>
+            <span className="text-white/10">/</span>
             <Link href="/schemes" className="px-3.5 py-1.5 rounded-lg hover:text-white hover:bg-white/[0.05] transition-colors">
               Schemes
             </Link>
@@ -479,6 +485,16 @@ export default function ModernObsidianLanding() {
             </Link>
           </div>
 
+          {/* WhatsApp Dedicated Tile */}
+          <Link
+            href="/whatsapp"
+            className="flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/20 hover:border-emerald-500/60 font-editorial-mono text-xs font-bold uppercase tracking-wider transition-all shadow-[0_0_15px_rgba(16,185,129,0.12)] group"
+            title="Chat with Sarkari Sach official WhatsApp bot"
+          >
+            <MessageCircle className="w-4 h-4 text-emerald-400 group-hover:scale-110 transition-transform" />
+            <span>WhatsApp Bot</span>
+          </Link>
+
           <a
             href="#verifier"
             className="silver-btn px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-widest inline-flex items-center gap-1.5 shadow-sm"
@@ -488,13 +504,23 @@ export default function ModernObsidianLanding() {
           </a>
         </nav>
 
-        {/* Mobile Mini Action */}
-        <a
-          href="#verifier"
-          className="md:hidden silver-btn px-3.5 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider"
-        >
-          Verify
-        </a>
+        {/* Mobile Mini Actions */}
+        <div className="flex md:hidden items-center gap-2">
+          <Link
+            href="/whatsapp"
+            className="px-2.5 py-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 flex items-center gap-1 text-[10px] font-bold uppercase"
+            aria-label="WhatsApp Bot"
+          >
+            <MessageCircle className="w-3 h-3 text-emerald-400" />
+            <span>WhatsApp</span>
+          </Link>
+          <a
+            href="#verifier"
+            className="silver-btn px-3.5 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider"
+          >
+            Verify
+          </a>
+        </div>
       </header>
 
       <main className="w-[92vw] max-w-7xl mx-auto space-y-24 sm:space-y-36 py-12 sm:py-20">
@@ -996,7 +1022,11 @@ export default function ModernObsidianLanding() {
           scrolledPastHero ? "translate-y-0 opacity-100" : "translate-y-32 opacity-0 pointer-events-none"
         }`}
       >
-        <div className="mobile-nav-blur px-4 py-2.5 rounded-full flex items-center gap-4 shadow-2xl">
+        <div className="mobile-nav-blur px-4 py-2.5 rounded-full flex items-center gap-3.5 shadow-2xl">
+          <Link href="/whatsapp" className="text-center font-editorial-mono text-[9px] tracking-widest uppercase text-emerald-400 flex items-center gap-1 font-bold">
+            <MessageCircle className="w-2.5 h-2.5 text-emerald-400" />
+            <span>WA</span>
+          </Link>
           <Link href="/schemes" className="text-center font-editorial-mono text-[9px] tracking-widest uppercase text-slate-400">
             Schemes
           </Link>
@@ -1027,6 +1057,11 @@ export default function ModernObsidianLanding() {
           © 2026 SARKARI SACH · RULE ZERO ENFORCED
         </div>
         <div className="flex items-center gap-4">
+          <Link href="/whatsapp" className="text-emerald-400 hover:text-emerald-300 transition-colors flex items-center gap-1">
+            <MessageCircle className="w-3 h-3" />
+            <span>WhatsApp Bot</span>
+          </Link>
+          <span>/</span>
           <Link href="/about" className="hover:text-white transition-colors">Doctrine</Link>
           <span>/</span>
           <Link href="/sources" className="hover:text-white transition-colors">Whitelist</Link>
