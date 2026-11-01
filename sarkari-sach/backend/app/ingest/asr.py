@@ -33,7 +33,8 @@ def transcribe_audio(audio_bytes: bytes, filename: str = "") -> tuple[str, str]:
                 mime = "audio/mp4"
 
             b64_data = base64.b64encode(audio_bytes).decode("utf-8")
-            url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={gemini_key}"
+            model_name = os.getenv("GEMINI_MODEL", "gemini-3.1-flash-lite")
+            url = f"https://generativelanguage.googleapis.com/v1beta/models/{model_name}:generateContent?key={gemini_key}"
             payload = {
                 "contents": [
                     {

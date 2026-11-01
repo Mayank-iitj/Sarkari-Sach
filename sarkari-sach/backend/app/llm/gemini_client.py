@@ -9,13 +9,13 @@ from app.settings import settings
 
 class GeminiClient:
     """
-    Native Google Gemini LLM Client (Gemini 1.5 / 2.0 Flash).
+    Native Google Gemini LLM Client (Gemini 2.5 / 3.1 Flash-Lite).
     Communicates directly with the official Google AI Studio Gemini REST API.
     """
 
-    def __init__(self, api_key: str | None = None, model: str = "gemini-1.5-flash"):
-        self.api_key = api_key or os.getenv("GEMINI_API_KEY", "")
-        self.model = model
+    def __init__(self, api_key: str | None = None, model: str | None = None):
+        self.api_key = api_key or os.getenv("GEMINI_API_KEY", "") or getattr(settings, "GEMINI_API_KEY", "")
+        self.model = model or os.getenv("GEMINI_MODEL", "gemini-3.1-flash-lite")
         self.base_url = f"https://generativelanguage.googleapis.com/v1beta/models/{self.model}:generateContent"
 
     def json(
