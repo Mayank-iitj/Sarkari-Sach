@@ -21,8 +21,8 @@ class OpenAIClient:
         images: list[bytes] | None = None
     ) -> dict[str, Any]:
         if not self.client:
-            from app.llm.fake_client import FakeClient
-            return FakeClient().json(system, user, schema, images=images)
+            from app.llm.gemini_client import GeminiClient
+            return GeminiClient().json(system, user, schema, images=images)
 
         user_content = []
         if isinstance(user, str):
@@ -57,8 +57,8 @@ class OpenAIClient:
         max_tokens: int = 400
     ) -> str:
         if not self.client:
-            from app.llm.fake_client import FakeClient
-            return FakeClient().text(system, user, max_tokens=max_tokens)
+            from app.llm.gemini_client import GeminiClient
+            return GeminiClient().text(system, user, max_tokens=max_tokens)
 
         response = self.client.chat.completions.create(
             model=self.model,

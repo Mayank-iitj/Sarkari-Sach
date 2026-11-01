@@ -49,6 +49,6 @@ def get_llm_client() -> LLMClient:
         from app.llm.openai_client import OpenAIClient
         return OpenAIClient()
 
-    # 4. Deterministic Grounded Offline Engine (zero hallucination, rule zero compliant)
-    from app.llm.fake_client import FakeClient as DeterministicGroundedEngine
-    return DeterministicGroundedEngine()
+    # Default: Live Google Gemini API (Strict Realtime Pipeline)
+    from app.llm.gemini_client import GeminiClient
+    return GeminiClient(api_key=gemini_key)

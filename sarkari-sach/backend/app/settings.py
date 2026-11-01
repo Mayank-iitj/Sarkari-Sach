@@ -19,8 +19,8 @@ class Settings(BaseSettings):
         extra="ignore"
     )
 
-    # LLM
-    LLM_PROVIDER: Literal["anthropic", "ollama", "fake", "gemini", "openai"] = "gemini"
+    # LLM (Strict live API integration)
+    LLM_PROVIDER: Literal["gemini", "anthropic", "openai", "ollama"] = "gemini"
     ANTHROPIC_API_KEY: str = ""
     GEMINI_API_KEY: str = ""
     OPENAI_API_KEY: str = ""
