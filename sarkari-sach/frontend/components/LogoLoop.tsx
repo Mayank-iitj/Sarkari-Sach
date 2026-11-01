@@ -123,7 +123,7 @@ export interface LogoLoopProps {
 }
 
 const createEngine = (root: HTMLElement, track: HTMLElement, config: React.MutableRefObject<any>, setLayout: any) => {
-  const query = typeof window.matchMedia === 'function' ? window.matchMedia('(prefers-reduced-motion: reduce)') : null;
+  const query = typeof window !== 'undefined' && typeof window.matchMedia === 'function' ? window.matchMedia('(prefers-reduced-motion: reduce)') : null;
   const st: any = {
     offset: 0,
     velocity: 0,
@@ -153,7 +153,7 @@ const createEngine = (root: HTMLElement, track: HTMLElement, config: React.Mutab
     hold: 0,
     seek: null,
     scrollVel: 0,
-    scrollY: window.scrollY,
+    scrollY: typeof window !== 'undefined' ? window.scrollY : 0,
     scrollT: 0,
     visible: typeof IntersectionObserver === 'undefined',
     introStart: -1,

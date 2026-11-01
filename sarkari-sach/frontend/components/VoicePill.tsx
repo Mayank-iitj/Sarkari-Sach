@@ -54,7 +54,7 @@ const micLevel = (analyser: AnalyserNode, buf: any) => {
 };
 
 const drawWave = (s: any, canvas: HTMLCanvasElement, level: number, color: string, floor: number) => {
-  const dpr = Math.min(2, window.devicePixelRatio || 1);
+  const dpr = Math.min(2, typeof window !== 'undefined' ? window.devicePixelRatio || 1 : 1);
   const rect = canvas.getBoundingClientRect();
   const W = Math.max(1, Math.round(rect.width * dpr));
   const H = Math.max(1, Math.round(rect.height * dpr));

@@ -5,28 +5,6 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import { getApiUrl } from "@/lib/api";
-
-const CircularText = dynamic(() => import("@/components/CircularText"), {
-  ssr: false,
-  loading: () => (
-    <div className="w-[190px] h-[190px] rounded-full border border-white/10 flex items-center justify-center">
-      <div className="w-16 h-16 rounded-full bg-white/[0.04] border border-white/10 flex flex-col items-center justify-center">
-        <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-      </div>
-    </div>
-  ),
-});
-
-const LogoLoop = dynamic(() => import("@/components/LogoLoop"), {
-  ssr: false,
-  loading: () => <div className="h-16 w-full animate-pulse bg-white/[0.02]" />,
-});
-
-const VoicePill = dynamic(() => import("@/components/VoicePill"), {
-  ssr: false,
-  loading: () => <div className="w-9 h-9 rounded-full bg-white/[0.04] animate-pulse" />,
-});
-
 import {
   ShieldCheck,
   Search,
@@ -50,6 +28,27 @@ import {
   Sun,
   Fingerprint,
 } from "lucide-react";
+
+const CircularText = dynamic(() => import("@/components/CircularText"), {
+  ssr: false,
+  loading: () => (
+    <div className="w-[190px] h-[190px] rounded-full border border-white/10 flex items-center justify-center">
+      <div className="w-16 h-16 rounded-full bg-white/[0.04] border border-white/10 flex flex-col items-center justify-center">
+        <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+      </div>
+    </div>
+  ),
+});
+
+const LogoLoop = dynamic(() => import("@/components/LogoLoop"), {
+  ssr: false,
+  loading: () => <div className="h-16 w-full animate-pulse bg-white/[0.02]" />,
+});
+
+const VoicePill = dynamic(() => import("@/components/VoicePill"), {
+  ssr: false,
+  loading: () => <div className="w-9 h-9 rounded-full bg-white/[0.04] animate-pulse" />,
+});
 
 const GOV_REGISTRY_LOGOS = [
   {
