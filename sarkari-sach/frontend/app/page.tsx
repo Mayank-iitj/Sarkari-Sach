@@ -16,6 +16,17 @@ const CircularText = dynamic(() => import("@/components/CircularText"), {
     </div>
   ),
 });
+
+const LogoLoop = dynamic(() => import("@/components/LogoLoop"), {
+  ssr: false,
+  loading: () => <div className="h-16 w-full animate-pulse bg-white/[0.02]" />,
+});
+
+const VoicePill = dynamic(() => import("@/components/VoicePill"), {
+  ssr: false,
+  loading: () => <div className="w-9 h-9 rounded-full bg-white/[0.04] animate-pulse" />,
+});
+
 import {
   ShieldCheck,
   Search,
@@ -33,7 +44,125 @@ import {
   ExternalLink,
   ChevronRight,
   Loader2,
+  Landmark,
+  Leaf,
+  HeartPulse,
+  Sun,
+  Fingerprint,
 } from "lucide-react";
+
+const GOV_REGISTRY_LOGOS = [
+  {
+    node: (
+      <div className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white/[0.03] border border-white/10 hover:border-emerald-500/40 hover:bg-emerald-500/10 transition-all cursor-pointer">
+        <Landmark className="w-4 h-4 text-emerald-400" />
+        <span className="font-editorial-mono text-xs font-semibold text-slate-200">The Gazette of India</span>
+      </div>
+    ),
+    title: "egazette.gov.in",
+    href: "https://egazette.gov.in",
+    hoverColor: "#10B981",
+  },
+  {
+    node: (
+      <div className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white/[0.03] border border-white/10 hover:border-cyan-500/40 hover:bg-cyan-500/10 transition-all cursor-pointer">
+        <ShieldCheck className="w-4 h-4 text-cyan-400" />
+        <span className="font-editorial-mono text-xs font-semibold text-slate-200">PIB Fact Check</span>
+      </div>
+    ),
+    title: "pib.gov.in",
+    href: "https://pib.gov.in",
+    hoverColor: "#38BDF8",
+  },
+  {
+    node: (
+      <div className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white/[0.03] border border-white/10 hover:border-amber-500/40 hover:bg-amber-500/10 transition-all cursor-pointer">
+        <Layers className="w-4 h-4 text-amber-400" />
+        <span className="font-editorial-mono text-xs font-semibold text-slate-200">myScheme National Portal</span>
+      </div>
+    ),
+    title: "myscheme.gov.in",
+    href: "https://myscheme.gov.in",
+    hoverColor: "#F59E0B",
+  },
+  {
+    node: (
+      <div className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white/[0.03] border border-white/10 hover:border-blue-500/40 hover:bg-blue-500/10 transition-all cursor-pointer">
+        <Globe className="w-4 h-4 text-blue-400" />
+        <span className="font-editorial-mono text-xs font-semibold text-slate-200">NIC Cloud (.gov.in)</span>
+      </div>
+    ),
+    title: "nic.in",
+    href: "https://nic.in",
+    hoverColor: "#60A5FA",
+  },
+  {
+    node: (
+      <div className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white/[0.03] border border-white/10 hover:border-emerald-500/40 hover:bg-emerald-500/10 transition-all cursor-pointer">
+        <Sparkles className="w-4 h-4 text-emerald-400" />
+        <span className="font-editorial-mono text-xs font-semibold text-slate-200">Digital India</span>
+      </div>
+    ),
+    title: "digitalindia.gov.in",
+    href: "https://digitalindia.gov.in",
+    hoverColor: "#34D399",
+  },
+  {
+    node: (
+      <div className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white/[0.03] border border-white/10 hover:border-orange-500/40 hover:bg-orange-500/10 transition-all cursor-pointer">
+        <Leaf className="w-4 h-4 text-orange-400" />
+        <span className="font-editorial-mono text-xs font-semibold text-slate-200">PM-KISAN (MoA&FW)</span>
+      </div>
+    ),
+    title: "pmkisan.gov.in",
+    href: "https://pmkisan.gov.in",
+    hoverColor: "#FB923C",
+  },
+  {
+    node: (
+      <div className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white/[0.03] border border-white/10 hover:border-rose-500/40 hover:bg-rose-500/10 transition-all cursor-pointer">
+        <HeartPulse className="w-4 h-4 text-rose-400" />
+        <span className="font-editorial-mono text-xs font-semibold text-slate-200">Ayushman Bharat (NHA)</span>
+      </div>
+    ),
+    title: "nha.gov.in",
+    href: "https://nha.gov.in",
+    hoverColor: "#F43F5E",
+  },
+  {
+    node: (
+      <div className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white/[0.03] border border-white/10 hover:border-purple-500/40 hover:bg-purple-500/10 transition-all cursor-pointer">
+        <Lock className="w-4 h-4 text-purple-400" />
+        <span className="font-editorial-mono text-xs font-semibold text-slate-200">DigiLocker</span>
+      </div>
+    ),
+    title: "digilocker.gov.in",
+    href: "https://digilocker.gov.in",
+    hoverColor: "#C084FC",
+  },
+  {
+    node: (
+      <div className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white/[0.03] border border-white/10 hover:border-yellow-500/40 hover:bg-yellow-500/10 transition-all cursor-pointer">
+        <Sun className="w-4 h-4 text-yellow-400" />
+        <span className="font-editorial-mono text-xs font-semibold text-slate-200">PM Surya Ghar (MNRE)</span>
+      </div>
+    ),
+    title: "pmsuryaghar.gov.in",
+    href: "https://pmsuryaghar.gov.in",
+    hoverColor: "#FACC15",
+  },
+  {
+    node: (
+      <div className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white/[0.03] border border-white/10 hover:border-indigo-500/40 hover:bg-indigo-500/10 transition-all cursor-pointer">
+        <Fingerprint className="w-4 h-4 text-indigo-400" />
+        <span className="font-editorial-mono text-xs font-semibold text-slate-200">UIDAI Authority</span>
+      </div>
+    ),
+    title: "uidai.gov.in",
+    href: "https://uidai.gov.in",
+    hoverColor: "#818CF8",
+  },
+];
 
 const SAMPLES = [
   {
@@ -459,6 +588,33 @@ export default function ModernObsidianLanding() {
           </div>
         </section>
 
+        {/* Sovereign Government Primary Source Loop from React Bits */}
+        <section className="space-y-4 max-w-6xl mx-auto w-full">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-2 px-2 text-center sm:text-left">
+            <span className="font-editorial-mono text-[10px] tracking-[0.3em] uppercase text-slate-500">
+              [ PRIMARY SOVEREIGN REGISTRIES CROSS-REFERENCED IN REAL-TIME ]
+            </span>
+            <span className="font-editorial-mono text-[9px] tracking-widest uppercase text-slate-600">
+              RULE ZERO COMPLIANT · DRAG TO EXPLORE
+            </span>
+          </div>
+
+          <div className="py-4 border-y border-white/[0.06] bg-white/[0.01]">
+            <LogoLoop
+              logos={GOV_REGISTRY_LOGOS}
+              speed={60}
+              direction="left"
+              logoHeight={34}
+              gap={24}
+              pauseOnHover
+              scaleOnHover
+              fadeOut
+              fadeOutWidth={0.15}
+              ariaLabel="Primary Sovereign Government Registries"
+            />
+          </div>
+        </section>
+
         {/* 3. Beta Capture Form / Verification Instant Dispatch */}
         <section id="verifier" className="scroll-mt-12 space-y-6 max-w-3xl mx-auto">
           <div className="text-center space-y-2">
@@ -495,39 +651,35 @@ export default function ModernObsidianLanding() {
               {/* Bottom Actions Row */}
               <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-white/[0.08]">
                 <div className="flex items-center gap-3">
-                  {/* Real Voice Dictate Button */}
-                  <button
-                    type="button"
-                    onClick={toggleRecording}
-                    disabled={isVoiceTranscribing}
-                    className={`px-3.5 py-2 rounded-xl text-xs font-editorial-mono flex items-center gap-2 transition-all ${
-                      isRecording
-                        ? "bg-red-500/20 text-red-400 border border-red-500/50 animate-pulse shadow-[0_0_15px_rgba(239,68,68,0.25)]"
-                        : isVoiceTranscribing
-                        ? "bg-amber-500/20 text-amber-300 border border-amber-500/40"
-                        : "bg-white/[0.04] text-slate-300 border border-white/[0.12] hover:text-white hover:bg-white/[0.08] hover:border-white/20"
-                    }`}
-                    title={isRecording ? "Click to stop recording" : "Dictate claim in Hindi or English"}
-                  >
-                    {isRecording ? (
-                      <MicOff className="w-3.5 h-3.5 text-red-400" />
-                    ) : isVoiceTranscribing ? (
-                      <Loader2 className="w-3.5 h-3.5 animate-spin text-amber-300" />
-                    ) : (
-                      <Mic className="w-3.5 h-3.5 text-slate-300" />
-                    )}
-                    <span className="text-[11px] tracking-[0.2em] uppercase font-bold">
-                      {isRecording
-                        ? "Listening..."
-                        : isVoiceTranscribing
-                        ? "Transcribing..."
-                        : "Dictate"}
-                    </span>
-                  </button>
+                  {/* Realtime Animated Voice Pill from React Bits */}
+                  <VoicePill
+                    accentColor="#10b981"
+                    iconColor="#94a3b8"
+                    background="#18191c"
+                    size={36}
+                    shape="pill"
+                    reach={10}
+                    showTime
+                    waveform
+                    slideToCancel
+                    cancelDistance={64}
+                    mode="auto"
+                    reactive="mic"
+                    ariaLabel="Dictate claim in Hindi or English"
+                    onStart={() => startVoiceDictation()}
+                    onStop={({ reason }) => {
+                      stopVoiceDictation();
+                    }}
+                  />
 
-                  <span className="text-[10px] sm:text-[11px] font-editorial-mono tracking-[0.2em] uppercase text-slate-400/80 select-none">
-                    Hindi & English Supported
-                  </span>
+                  <div className="flex flex-col">
+                    <span className="text-[10px] sm:text-[11px] font-editorial-mono tracking-[0.2em] uppercase text-slate-300 font-bold select-none">
+                      {isRecording ? "Listening (Hindi & English)..." : isVoiceTranscribing ? "Transcribing Audio..." : "Voice Dictate"}
+                    </span>
+                    <span className="text-[9px] font-editorial-mono tracking-wider text-slate-500 uppercase select-none">
+                      Tap or Hold · Slide to Cancel
+                    </span>
+                  </div>
                 </div>
 
                 <button

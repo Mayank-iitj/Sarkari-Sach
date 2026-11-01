@@ -1,9 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import Navbar from "@/components/Navbar";
 import { getApiUrl } from "@/lib/api";
+
+const VoicePill = dynamic(() => import("@/components/VoicePill"), {
+  ssr: false,
+  loading: () => <div className="w-9 h-9 rounded-full bg-slate-700/50 animate-pulse" />,
+});
 import {
   Send,
   MessageCircle,
@@ -53,6 +59,60 @@ export default function WhatsAppSimulatorPage() {
   const [inputMessage, setInputMessage] = useState("");
   const [isSending, setIsSending] = useState(false);
   const [isPlayingAudio, setIsPlayingAudio] = useState<string | null>(null);
+  const recognitionRef = useRef<any>(null);
+
+  useEffect(() => {
+    return () => {
+      if (recognitionRef.current) {
+        try { recognitionRef.current.abort(); } catch {}
+      }
+    };
+  }, []);
+
+  const startVoiceInput = () => {
+    const SpeechRecognition =
+      typeof window !== "undefined"
+        ? (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition
+        : null;
+
+    if (SpeechRecognition) {
+      try {
+        const recognition = new SpeechRecognition();
+        recognition.continuous = true;
+        recognition.interimResults = true;
+        recognition.lang = "hi-IN";
+        const base = inputMessage ? inputMessage.trim() + " " : "";
+
+        recognition.onresult = (event: any) => {
+          let str = "";
+          for (let i = 0; i < event.results.length; i++) {
+            str += event.results[i][0].transcript;
+          }
+          if (str.trim()) {
+            setInputMessage(base + str.trim());
+          }
+        };
+
+        recognition.onerror = (e: any) => {
+          console.warn("WhatsApp Speech Recognition notice:", e);
+        };
+
+        recognitionRef.current = recognition;
+        recognition.start();
+      } catch (err) {
+        console.warn("Speech recognition error:", err);
+      }
+    }
+  };
+
+  const stopVoiceInput = () => {
+    if (recognitionRef.current) {
+      try {
+        recognitionRef.current.stop();
+      } catch {}
+      recognitionRef.current = null;
+    }
+  };
 
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
@@ -316,13 +376,30 @@ export default function WhatsAppSimulatorPage() {
                   type="text"
                   value={inputMessage}
                   onChange={(e) => setInputMessage(e.target.value)}
-                  placeholder="Type or paste a message..."
+                  placeholder="Type or dictate a voice claim..."
                   className="flex-1 bg-[#2A3942] text-xs text-slate-200 placeholder:text-slate-500 rounded-xl px-3.5 py-2.5 focus:outline-none"
+                />
+                <VoicePill
+                  accentColor="#25D366"
+                  iconColor="#8696a0"
+                  background="#2A3942"
+                  size={36}
+                  shape="pill"
+                  reach={8}
+                  showTime
+                  waveform
+                  slideToCancel
+                  cancelDistance={60}
+                  mode="auto"
+                  reactive="mic"
+                  ariaLabel="Dictate WhatsApp message"
+                  onStart={() => startVoiceInput()}
+                  onStop={() => stopVoiceInput()}
                 />
                 <button
                   type="submit"
                   disabled={isSending || !inputMessage.trim()}
-                  className="w-9 h-9 rounded-xl bg-[#00A884] text-white flex items-center justify-center disabled:opacity-40 hover:bg-[#008f6f] transition-colors"
+                  className="w-9 h-9 rounded-xl bg-[#00A884] text-white flex items-center justify-center disabled:opacity-40 hover:bg-[#008f6f] transition-colors flex-shrink-0"
                 >
                   <Send className="w-4 h-4 ml-0.5" />
                 </button>
