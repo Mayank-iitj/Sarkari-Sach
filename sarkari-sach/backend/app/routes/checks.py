@@ -294,8 +294,8 @@ def get_check_audio(id_or_public_id: str, lang: str = "hi", db: Session = Depend
         (Check.id == id_or_public_id) | (Check.public_id == id_or_public_id)
     ).first()
 
-    # Determine text to speak
-    text_to_speak = "सरकारी सच सत्यापन परिणाम तैयार है।"
+    effective_lang = lang or (check.lang_reply if check else "hi")
+    text_to_speak = "Sarkari Sach verification report is ready." if effective_lang == "en" else "सरकारी सच सत्यापन परिणाम तैयार है।"
     if check and check.explanation:
         expl = check.explanation
         text_to_speak = expl.get("tts_text") or expl.get("short") or text_to_speak

@@ -119,15 +119,50 @@ async def run_verification_pipeline(
             "claim": extracted_claims[0].get("claim_text")
         })
 
-    # If no claims could be extracted -> early exit to UNVERIFIABLE
+    # If no claims could be extracted -> dynamically generate grounded unverified response via Gemini
     if not extracted_claims:
         check.verdict = Verdict.UNVERIFIABLE.value
         check.confidence = 0.0
-        check.reasons = [{"code": "UNCLEAR_INPUT", "message": "No checkable government scheme or rule found in message."}]
+
+        try:
+            unclear_res = llm.json(
+                system=(
+                    f"You are Sarkari Sach, the official government verification AI. "
+                    f"Write a concise, plain-language assessment for the citizen who submitted this text: <input>{norm_text}</input>. "
+                    f"Explain clearly that no checkable central government order, gazette notification, or concrete statutory claim was identified. "
+                    f"Provide 2-3 safe official action steps. Language: {actual_reply_lang}. "
+                    f"Return JSON: {{\"short\": str, \"steps\": [str]}}"
+                ),
+                user=f"Explain in {actual_reply_lang} why '{norm_text}' cannot be verified against official gazettes.",
+                schema={"type": "object"}
+            )
+            short_expl = unclear_res.get("short") or (
+                "No specific government scheme, gazette notice, or verifiable claim was identified in this text."
+                if actual_reply_lang == "en"
+                else "इस संदेश में कोई स्पष्ट सरकारी आदेश, गजट अधिसूचना या सत्यापन योग्य दावा नहीं मिला।"
+            )
+            step_list = unclear_res.get("steps") or (
+                ["Verify announcements directly on official .gov.in websites.", "Do not trust forwarded social media notices without an official Gazette S.O./G.S.R. number."]
+                if actual_reply_lang == "en"
+                else ["आधिकारिक .gov.in वेबसाइटों पर सीधे सूचना की पुष्टि करें।", "बिना आधिकारिक गजट संख्या वाले फॉरवर्ड किए गए संदेशों पर विश्वास न करें।"]
+            )
+        except Exception:
+            short_expl = (
+                "No verifiable government scheme or rule was found in this text."
+                if actual_reply_lang == "en"
+                else "इस संदेश में कोई सत्यापन योग्य सरकारी आदेश या योजना नहीं मिली।"
+            )
+            step_list = (
+                ["Check official portals (e.g. myscheme.gov.in) directly."]
+                if actual_reply_lang == "en"
+                else ["असली सरकारी सूचना के लिए सीधे आधिकारिक वेबसाइट देखें।"]
+            )
+
+        check.reasons = [{"code": "UNCLEAR_INPUT", "message": short_expl}]
         check.explanation = {
             "lang": actual_reply_lang,
-            "short": "इस संदेश में कोई स्पष्ट सरकारी आदेश या योजना नहीं मिली जिसे जाँचा जा सके।",
-            "steps": ["असली सरकारी सूचना के लिए सीधे आधिकारिक वेबसाइट देखें।"]
+            "short": short_expl,
+            "steps": step_list
         }
         check.status = "DONE"
         check.finished_at = datetime.utcnow()
@@ -465,7 +500,11 @@ async def run_verification_pipeline(
         off_summary = f"{diff_items[0]['field']}: {diff_items[0]['official']}"
     elif decision.verdict == Verdict.FORGED:
         claim_summary = primary_claim.get("claim_text", "Fake circular / payment link")
-        off_summary = "आधिकारिक पोर्टल पर यह योजना पूर्णतः निःशुल्क है।"
+        off_summary = (
+            "Registration is completely free on authorized government portals with no fee."
+            if actual_reply_lang == "en"
+            else "आधिकारिक पोर्टल पर यह योजना पूर्णतः निःशुल्क है और कोई शुल्क नहीं लिया जाता।"
+        )
     else:
         off_summary = best_doc.title if best_doc else "Government of India Official Records"
 

@@ -8,9 +8,9 @@ from app.settings import settings
 
 
 FALLBACK_MODELS = [
-    "gemini-3-flash-preview",
     "gemini-3.5-flash",
     "gemini-3.6-flash",
+    "gemini-3-flash-preview",
     "gemini-3.1-flash-lite",
 ]
 
@@ -28,7 +28,7 @@ class GeminiClient:
             or os.getenv("GEMINI_API_KEY", "")
             or getattr(settings, "GEMINI_API_KEY", "")
         )
-        self.preferred_model = model or os.getenv("GEMINI_MODEL", "gemini-3-flash-preview")
+        self.preferred_model = model or os.getenv("GEMINI_MODEL", "gemini-3.5-flash")
 
     def _get_models(self) -> list[str]:
         models = [self.preferred_model]
@@ -148,4 +148,8 @@ CRITICAL: Return ONLY valid raw JSON matching this schema, with no markdown code
             except Exception as e:
                 print(f"[GeminiClient] Text generation error with {model}: {e}")
 
-        return "सत्यापन आधिकारिक सरकारी पोर्टल पर आधारित है।"
+        return (
+            "Verification is grounded strictly in official Central Government registries."
+            if "en" in user.lower()
+            else "सत्यापन आधिकारिक केंद्रीय सरकारी अभिलेखों पर आधारित है।"
+        )
